@@ -21,6 +21,13 @@ public class Users {
     public Users() {
     }
 
+
+    public Users(String email, String username, String password, List<Roles> role) {
+        this.email = email;
+        this.username = username;
+        this.password = password;
+        this.role = role;
+    }
     public Users(long id, String email, String username, String password, List<Roles> role) {
         this.id = id;
         this.email = email;

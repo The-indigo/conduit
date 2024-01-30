@@ -28,10 +28,11 @@ public class UserService {
             throw new Exception ("We require you to fill all fields");
         }
          var user= usersRepository.findUsersByEmail(email);
-         if(user!=null){
+         if(user!=null && user.getEmail().equals(email)){
             throw new Exception ("Too late!! This email address is already in use");
          }
-         if(user.getUsername().equals(username)){
+       
+         if(user!=null && user.getUsername().equals(username)){
             throw new Exception("Too late!! Someone already took this username");
          }
          String encryptedPassword= passwordEncoder.encode(password);
