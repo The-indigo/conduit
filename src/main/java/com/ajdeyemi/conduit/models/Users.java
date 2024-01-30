@@ -3,10 +3,12 @@ package com.ajdeyemi.conduit.models;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+
+import java.util.List;
 import java.util.Objects;
 
 @Entity
-@Table(name = "user")
+@Table(name = "users")
 public class Users {
 
     @Id
@@ -14,13 +16,12 @@ public class Users {
     private String email;
     private String username;
     private String password;
-    private Roles role;
-
+    private List<Roles> role;
 
     public Users() {
     }
 
-    public Users(long id, String email, String username, String password, Roles role) {
+    public Users(long id, String email, String username, String password, List<Roles> role) {
         this.id = id;
         this.email = email;
         this.username = username;
@@ -60,11 +61,11 @@ public class Users {
         this.password = password;
     }
 
-    public Roles getRole() {
+    public List<Roles> getRole() {
         return this.role;
     }
 
-    public void setRole(Roles role) {
+    public void setRole(List<Roles> role) {
         this.role = role;
     }
 
@@ -88,7 +89,7 @@ public class Users {
         return this;
     }
 
-    public Users role(Roles role) {
+    public Users role(List<Roles> role) {
         setRole(role);
         return this;
     }
@@ -119,6 +120,9 @@ public class Users {
             ", role='" + getRole() + "'" +
             "}";
     }
+
+
+ 
 
 }
 

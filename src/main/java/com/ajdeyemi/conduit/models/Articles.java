@@ -3,6 +3,8 @@ package com.ajdeyemi.conduit.models;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+
+import java.util.List;
 import java.util.Objects;
 
 @Entity
@@ -11,16 +13,22 @@ public class Articles {
     @Id
     private long id;
     private long user;
-    private String article;
+    private String title;
+    private String description;
+    private String body;
+    private List<String> tags;
 
 
     public Articles() {
     }
 
-    public Articles(long id, long user, String article) {
+    public Articles(long id, long user, String title, String description, String body, List<String> tags) {
         this.id = id;
         this.user = user;
-        this.article = article;
+        this.title = title;
+        this.description = description;
+        this.body = body;
+        this.tags = tags;
     }
 
     public long getId() {
@@ -39,12 +47,36 @@ public class Articles {
         this.user = user;
     }
 
-    public String getArticle() {
-        return this.article;
+    public String getTitle() {
+        return this.title;
     }
 
-    public void setArticle(String article) {
-        this.article = article;
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public String getDescription() {
+        return this.description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public String getBody() {
+        return this.body;
+    }
+
+    public void setBody(String body) {
+        this.body = body;
+    }
+
+    public List<String> getTags() {
+        return this.tags;
+    }
+
+    public void setTags(List<String> tags) {
+        this.tags = tags;
     }
 
     public Articles id(long id) {
@@ -57,8 +89,23 @@ public class Articles {
         return this;
     }
 
-    public Articles article(String article) {
-        setArticle(article);
+    public Articles title(String title) {
+        setTitle(title);
+        return this;
+    }
+
+    public Articles description(String description) {
+        setDescription(description);
+        return this;
+    }
+
+    public Articles body(String body) {
+        setBody(body);
+        return this;
+    }
+
+    public Articles tags(List<String> tags) {
+        setTags(tags);
         return this;
     }
 
@@ -70,12 +117,12 @@ public class Articles {
             return false;
         }
         Articles articles = (Articles) o;
-        return id == articles.id && user == articles.user && Objects.equals(article, articles.article);
+        return id == articles.id && user == articles.user && Objects.equals(title, articles.title) && Objects.equals(description, articles.description) && Objects.equals(body, articles.body) && Objects.equals(tags, articles.tags);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, user, article);
+        return Objects.hash(id, user, title, description, body, tags);
     }
 
     @Override
@@ -83,8 +130,13 @@ public class Articles {
         return "{" +
             " id='" + getId() + "'" +
             ", user='" + getUser() + "'" +
-            ", article='" + getArticle() + "'" +
+            ", title='" + getTitle() + "'" +
+            ", description='" + getDescription() + "'" +
+            ", body='" + getBody() + "'" +
+            ", tags='" + getTags() + "'" +
             "}";
     }
+
+
     
 }
