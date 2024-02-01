@@ -44,9 +44,8 @@ public class CustomUserDetailsService implements UserDetailsService  {
 
         @Override
         public String getUsername() {
-            return getUsername();
+            return getEmail();
         }
-
 
         @Override
         public boolean isAccountNonExpired() {
