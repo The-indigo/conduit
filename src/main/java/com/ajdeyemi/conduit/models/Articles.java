@@ -1,6 +1,8 @@
 package com.ajdeyemi.conduit.models;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
@@ -16,6 +18,7 @@ public class Articles {
     private String title;
     private String description;
     private String body;
+    @Enumerated(EnumType.STRING)
     private List<String> tags;
 
 
