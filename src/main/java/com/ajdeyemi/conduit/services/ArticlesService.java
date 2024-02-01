@@ -1,8 +1,6 @@
 package com.ajdeyemi.conduit.services;
 
-import java.util.List;
 
-import org.hibernate.query.spi.Limit;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
