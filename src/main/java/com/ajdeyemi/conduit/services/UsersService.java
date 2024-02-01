@@ -52,8 +52,8 @@ public class UsersService {
          if(user!=null && user.getEmail().equals(email)){
             throw new Exception ("Too late!! This email address is already in use");
          }
-       
-         if(user!=null && user.getUsername().equals(username)){
+     var usernameTaken=usersRepository.findUsersByUsername(username);
+         if(usernameTaken!=null){
             throw new Exception("Too late!! Someone already took this username");
          }
          String encryptedPassword= passwordEncoder.encode(password);
