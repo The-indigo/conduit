@@ -11,7 +11,7 @@ import com.ajdeyemi.conduit.models.Users;
 import com.ajdeyemi.conduit.repositories.UsersRepository;
 
 @Service
-public class UserService {
+public class UsersService {
 
     @Autowired
     UsersRepository usersRepository;

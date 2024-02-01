@@ -5,8 +5,12 @@ import java.security.KeyPairGenerator;
 import java.security.interfaces.RSAPublicKey;
 import java.util.UUID;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.ProviderManager;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -29,19 +33,28 @@ import com.nimbusds.jose.proc.SecurityContext;
 public class SecurityConfig {
 
 
+       @Autowired
+    CustomUserDetailsService userDetailsService;
+
+        @Bean
+public AuthenticationManager authenticationManager(){
+    DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
+    authProvider.setUserDetailsService(userDetailsService);
+    authProvider.setPasswordEncoder(bCryptPasswordEncoder());
+    return new ProviderManager(authProvider);
+}
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception{
               http
-        .authorizeHttpRequests((authorize)->authorize.requestMatchers("/register","/login")
-        .permitAll().anyRequest().authenticated())
+        .authorizeHttpRequests((authorize)->authorize.requestMatchers("/register","login").permitAll().anyRequest().authenticated())
         .csrf((csrf) -> csrf.disable())
         .sessionManagement((session) -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
         .oauth2ResourceServer((oauth2)->oauth2.jwt(Customizer.withDefaults()));
         return http.build();
     }
 
-        @Bean
+    @Bean
     public KeyPair keyPair(){
         try{
             KeyPairGenerator keyPairGenerator=KeyPairGenerator.getInstance("RSA");
@@ -52,7 +65,7 @@ public class SecurityConfig {
         }
     }
 
-        @Bean
+    @Bean
     public RSAKey rsaKey(KeyPair keyPair){
         return new RSAKey.Builder((RSAPublicKey)keyPair.getPublic())
         .privateKey(keyPair.getPrivate())
@@ -60,7 +73,7 @@ public class SecurityConfig {
         .build();
     }
 
-          @Bean
+    @Bean
     public JWKSource <SecurityContext> jwkSource(RSAKey rsaKey){
         var jwkSet= new JWKSet(rsaKey);
         // using lambda code to mame it neater
@@ -68,7 +81,7 @@ public class SecurityConfig {
     
     }
 
-        @Bean
+    @Bean
     public JwtDecoder jwtDecoder(RSAKey rsaKey) throws JOSEException{
         return NimbusJwtDecoder.withPublicKey(rsaKey.toRSAPublicKey()).build();
     }
