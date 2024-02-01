@@ -18,7 +18,6 @@ public class Articles {
     private String title;
     private String description;
     private String body;
-    @Enumerated(EnumType.STRING)
     private List<String> tags;
 
 

@@ -21,6 +21,8 @@ public class Users {
     private String email;
     private String username;
     private String password;
+    // this is an enum. The value is by default stored as a number 
+    // in the database if it is stored as a list
      @Enumerated(EnumType.STRING)
     private List<Roles> role;
 

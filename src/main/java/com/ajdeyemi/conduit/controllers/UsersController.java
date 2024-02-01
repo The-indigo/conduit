@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.ajdeyemi.conduit.models.LoginResponse;
@@ -14,12 +15,13 @@ import com.ajdeyemi.conduit.models.Users;
 import com.ajdeyemi.conduit.services.UsersService;
 
 @RestController
+@RequestMapping("/api/users")
 public class UsersController {
     
     @Autowired
     UsersService usersService;
 
-    @PostMapping("/register")
+    @PostMapping("/")
     public ResponseEntity<?> register(@RequestBody Users user){
         try{
             Users registerUser= usersService.register(user.getEmail(), user.getPassword(), 
