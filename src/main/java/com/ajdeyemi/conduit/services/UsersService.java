@@ -74,13 +74,10 @@ public class UsersService {
             throw new Exception ("Email is required");
 
         }
-        Users user=usersRepository.findUsersByEmail(email);
-        if(user==null){
-            throw new Exception("There is no user with this details!!");
-        }
             Authentication authentication= authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(email,password));
             String token = tokenService.generateToken(authentication);
+            Users user=usersRepository.findUsersByEmail(email);
             // (long id, String email, String username, List<Role> role, String token)
             LoginResponse loginResponse= new LoginResponse(user.getId(),user.getEmail(),user.getUsername(),user.getRole(),token);
         return loginResponse;
