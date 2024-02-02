@@ -23,6 +23,12 @@ public class Articles {
 
     public Articles() {
     }
+    public Articles(long user, String title, String description, String body) {
+        this.user = user;
+        this.title = title;
+        this.description = description;
+        this.body = body;
+    }
 
     public Articles(long id, long user, String title, String description, String body) {
         this.id = id;
