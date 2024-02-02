@@ -154,4 +154,42 @@ public class UsersService {
         }
     }
 
+
+    public Profile followUser(String username) throws Exception{
+        String authenticated = SecurityContextHolder.getContext().getAuthentication().getName();
+        Users currentUser = usersRepository.findUsersByEmail(authenticated);
+        Users user= usersRepository.findUsersByUsername(username);
+        if(user!=null){
+            Followers following = followersRepository.findFollowingUser(currentUser.getId(), user.getId());
+            if(following!=null){
+                throw new Exception("You are already following this user");
+            }else{
+                Followers follow= new Followers(currentUser.getId(), user.getId());
+                followersRepository.save(follow);
+                Profile profile=new Profile(user.getEmail(), user.getUsername(), true);
+                return profile;
+            }
+        }else{
+            throw new Exception("Sorry, this user can't be found");
+        }
+    }
+
+    public Profile unfollowUser(String username) throws Exception{
+        String authenticated = SecurityContextHolder.getContext().getAuthentication().getName();
+        Users currentUser = usersRepository.findUsersByEmail(authenticated);
+        Users user= usersRepository.findUsersByUsername(username);
+        if(user!=null){
+            Followers following = followersRepository.findFollowingUser(currentUser.getId(), user.getId());
+            if(following!=null){
+                followersRepository.delete(following);
+                Profile profile=new Profile(user.getEmail(), user.getUsername(), false);
+                return profile;
+            }else{
+                throw new Exception("You have not followed this user");
+            }
+        }else{
+            throw new Exception("Sorry, this user can't be found");
+        }
+    }
+
 }

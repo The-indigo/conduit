@@ -20,6 +20,10 @@ public class Followers {
     public Followers() {
     }
 
+    public Followers( long user, long following) {
+        this.user = user;
+        this.following = following;
+    }
     public Followers(long id, long user, long following) {
         this.id = id;
         this.user = user;
