@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -57,6 +58,21 @@ public class UsersController {
           authenticatedUser.getEmail(), authenticatedUser.getUsername(),
           authenticatedUser.getRole());
           return ResponseEntity.ok().body(current);
+        }catch(Exception e){
+            HashMap<String,String> error= new HashMap<>();
+            error.put("error",e.getMessage() );
+            return ResponseEntity.status(401).body(error);
+        }
+    }
+    @PutMapping("/user")
+    public ResponseEntity<?> updateUser(@RequestBody Users user){
+        try{
+            Users updateUser= usersService.updateUser(user.getId(), 
+            user.getEmail(),
+             user.getPassword(), 
+             user.getUsername(),
+              user.getRole());
+              return ResponseEntity.ok().body(updateUser);
         }catch(Exception e){
             HashMap<String,String> error= new HashMap<>();
             error.put("error",e.getMessage() );

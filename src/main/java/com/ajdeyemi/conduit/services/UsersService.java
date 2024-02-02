@@ -1,6 +1,7 @@
 package com.ajdeyemi.conduit.services;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -10,9 +11,12 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.ajdeyemi.conduit.models.Followers;
 import com.ajdeyemi.conduit.models.LoginResponse;
+import com.ajdeyemi.conduit.models.Profile;
 import com.ajdeyemi.conduit.models.Roles;
 import com.ajdeyemi.conduit.models.Users;
+import com.ajdeyemi.conduit.repositories.FollowersRepository;
 import com.ajdeyemi.conduit.repositories.UsersRepository;
 
 @Service
@@ -20,6 +24,9 @@ public class UsersService {
 
     @Autowired
     UsersRepository usersRepository;
+
+    @Autowired
+    FollowersRepository followersRepository;
 
       @Autowired
     AuthenticationManager authenticationManager;
@@ -96,5 +103,56 @@ public class UsersService {
         //     }
         
     }
+
+    public Users updateUser(long id,String email, String password, String username,List<Roles>role)throws Exception{
+    // TO DO: Implement duplicate checking
+        Optional <Users> getUser= usersRepository.findById(id);
+       if(getUser.isPresent()){
+        var user= getUser.get();
+        String setEmail= email!=null?email:user.getEmail();
+        String setPassword= password!=null?passwordEncoder.encode(password):user.getPassword();
+        String setUsername= username!=null?username:user.getUsername();
+        List<Roles> setRoles= role!=null?role:user.getRole();
+
+    user.setEmail(setEmail);
+    user.setPassword(setPassword);
+    user.setUsername(setUsername);
+    user.setRole(setRoles);
+     usersRepository.save(user);
+     return user;
+       }else{
+        throw new Exception("There is no user with this ID");
+       }
+
+    }
+
+    public Profile getProfile(String username) throws Exception{
+        String authenticated= SecurityContextHolder.getContext().getAuthentication().getName();
+        if(username!=null && !(username.isBlank())){
+
+            // This is the user of which we are getting the profile
+            Users user= usersRepository.findUsersByUsername(username);
+            if(user!=null){
+                // This is the current signed in user making the request
+                Users currentUser= usersRepository.findUsersByEmail(authenticated);
+
+                Followers following=followersRepository.findFollowingUser(currentUser.getId(), user.getId());
+                if(following!=null){
+                    Profile isFollowing=new Profile(user.getEmail(),user.getUsername(),true);
+                    return isFollowing;
+                }else{
+                    Profile isNotFollowing=new Profile(user.getEmail(),user.getUsername(),false);
+                    return isNotFollowing;
+                }
+               
+            }else{
+                throw new Exception("Sorry, this user can't be found");
+            }
+        }else{
+            throw new Exception("No username provided");
+        }
+    }
+
+
 }
 
