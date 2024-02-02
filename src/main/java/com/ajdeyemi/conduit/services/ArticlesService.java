@@ -132,5 +132,4 @@ return articles;
             throw new Exception("Article slug required");
         }
     }
-
 }
