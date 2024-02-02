@@ -1,12 +1,15 @@
 package com.ajdeyemi.conduit.services;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 
 import com.ajdeyemi.conduit.models.LoginResponse;
@@ -81,6 +84,19 @@ public class UsersService {
             // (long id, String email, String username, List<Role> role, String token)
             LoginResponse loginResponse= new LoginResponse(user.getId(),user.getEmail(),user.getUsername(),user.getRole(),token);
         return loginResponse;
+    }
+
+    public Users currentUser()throws Exception{
+        String authenticated= SecurityContextHolder.getContext().getAuthentication().getName();
+        Users authenticatedUser= usersRepository.findUsersByEmail(authenticated);
+        return authenticatedUser;
+
+               // Jwt jwt = (Jwt)  SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        // Map<String, Object> allClaims = jwt.getClaims();
+        //     for (Map.Entry<String, Object> entry : allClaims.entrySet()) {
+        //         System.out.println(entry.getKey() + ": " + entry.getValue());
+        //     }
+        
     }
 }
 

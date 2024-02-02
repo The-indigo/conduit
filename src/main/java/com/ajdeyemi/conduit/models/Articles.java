@@ -1,36 +1,35 @@
 package com.ajdeyemi.conduit.models;
 
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
-import java.util.List;
 import java.util.Objects;
 
 @Entity
 @Table(name="articles")
 public class Articles {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
     private long user;
     private String title;
     private String description;
     private String body;
-    private List<String> tags;
+    // private List<Tags> tags;
 
 
     public Articles() {
     }
 
-    public Articles(long id, long user, String title, String description, String body, List<String> tags) {
+    public Articles(long id, long user, String title, String description, String body) {
         this.id = id;
         this.user = user;
         this.title = title;
         this.description = description;
         this.body = body;
-        this.tags = tags;
     }
 
     public long getId() {
@@ -73,14 +72,6 @@ public class Articles {
         this.body = body;
     }
 
-    public List<String> getTags() {
-        return this.tags;
-    }
-
-    public void setTags(List<String> tags) {
-        this.tags = tags;
-    }
-
     public Articles id(long id) {
         setId(id);
         return this;
@@ -106,11 +97,6 @@ public class Articles {
         return this;
     }
 
-    public Articles tags(List<String> tags) {
-        setTags(tags);
-        return this;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (o == this)
@@ -119,12 +105,12 @@ public class Articles {
             return false;
         }
         Articles articles = (Articles) o;
-        return id == articles.id && user == articles.user && Objects.equals(title, articles.title) && Objects.equals(description, articles.description) && Objects.equals(body, articles.body) && Objects.equals(tags, articles.tags);
+        return id == articles.id && user == articles.user && Objects.equals(title, articles.title) && Objects.equals(description, articles.description) && Objects.equals(body, articles.body);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, user, title, description, body, tags);
+        return Objects.hash(id, user, title, description, body);
     }
 
     @Override
@@ -135,9 +121,10 @@ public class Articles {
             ", title='" + getTitle() + "'" +
             ", description='" + getDescription() + "'" +
             ", body='" + getBody() + "'" +
-            ", tags='" + getTags() + "'" +
             "}";
     }
+
+ 
 
 
     
