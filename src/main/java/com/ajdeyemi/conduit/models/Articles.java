@@ -21,6 +21,8 @@ public class Articles {
     private String description;
     private String body;
     private List<String> tags;
+    private int favoriteCount;
+
 
 
 
@@ -36,7 +38,8 @@ public class Articles {
 
     }
 
-    public Articles(long id, String slug, long user, String title, String description, String body, List<String> tags) {
+
+    public Articles(long id, String slug, long user, String title, String description, String body, List<String> tags, int favoriteCount) {
         this.id = id;
         this.slug = slug;
         this.user = user;
@@ -44,6 +47,7 @@ public class Articles {
         this.description = description;
         this.body = body;
         this.tags = tags;
+        this.favoriteCount = favoriteCount;
     }
 
     public long getId() {
@@ -57,14 +61,14 @@ public class Articles {
     public String getSlug() {
         return this.slug;
     }
-
+    
     public void setSlug() {
-      String title= this.title.trim();
-     String[] words= title.split(" ");
-     String.join("-", words);
-    //  also
-    //  title.replaceAll("\\s+", "-")
-    }
+        String title= this.title.trim();
+       String[] words= title.split(" ");
+       String.join("-", words);
+      //  also
+      //  title.replaceAll("\\s+", "-")
+      }
 
     public long getUser() {
         return this.user;
@@ -106,6 +110,14 @@ public class Articles {
         this.tags = tags;
     }
 
+    public int getFavoriteCount() {
+        return this.favoriteCount;
+    }
+
+    public void setFavoriteCount(int favoriteCount) {
+        this.favoriteCount = favoriteCount;
+    }
+
     public Articles id(long id) {
         setId(id);
         return this;
@@ -141,6 +153,11 @@ public class Articles {
         return this;
     }
 
+    public Articles favoriteCount(int favoriteCount) {
+        setFavoriteCount(favoriteCount);
+        return this;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (o == this)
@@ -149,12 +166,12 @@ public class Articles {
             return false;
         }
         Articles articles = (Articles) o;
-        return id == articles.id && Objects.equals(slug, articles.slug) && user == articles.user && Objects.equals(title, articles.title) && Objects.equals(description, articles.description) && Objects.equals(body, articles.body) && Objects.equals(tags, articles.tags);
+        return id == articles.id && Objects.equals(slug, articles.slug) && user == articles.user && Objects.equals(title, articles.title) && Objects.equals(description, articles.description) && Objects.equals(body, articles.body) && Objects.equals(tags, articles.tags) && favoriteCount == articles.favoriteCount;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, slug, user, title, description, body, tags);
+        return Objects.hash(id, slug, user, title, description, body, tags, favoriteCount);
     }
 
     @Override
@@ -167,10 +184,10 @@ public class Articles {
             ", description='" + getDescription() + "'" +
             ", body='" + getBody() + "'" +
             ", tags='" + getTags() + "'" +
+            ", favoriteCount='" + getFavoriteCount() + "'" +
             "}";
     }
 
-  
 
 
     
