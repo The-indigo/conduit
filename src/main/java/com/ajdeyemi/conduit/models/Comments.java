@@ -21,6 +21,12 @@ public class Comments {
     public Comments() {
     }
 
+    public Comments( long article, long user, String comment) {
+        this.article = article;
+        this.user = user;
+        this.comment = comment;
+    }
+
     public Comments(long id, long article, long user, String comment) {
         this.id = id;
         this.article = article;

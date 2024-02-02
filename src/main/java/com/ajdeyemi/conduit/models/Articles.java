@@ -111,8 +111,8 @@ public class Articles {
         return this;
     }
 
-    public Articles slug(String slug) {
-        setSlug(slug);
+    public Articles slug() {
+        setSlug();
         return this;
     }
 
