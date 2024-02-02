@@ -107,6 +107,7 @@ public class UsersService {
     public Users updateUser(long id, String email, String password, String username, List<Roles> role)
             throws Exception {
         // TO DO: Implement duplicate checking
+        //TODO: CHECK ALL USERS EXCEPT CURRENT USER. CREATE QUERY FOR THIS
         Optional<Users> getUser = usersRepository.findById(id);
         if (getUser.isPresent()) {
             var user = getUser.get();

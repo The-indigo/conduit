@@ -21,6 +21,11 @@ public class Tags {
     public Tags() {
     }
 
+    public Tags( String tag, long article) {
+        this.tag = tag;
+        this.article = article;
+    }
+
     public Tags(long id, String tag, long article) {
         this.id = id;
         this.tag = tag;

@@ -6,6 +6,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
+import java.util.List;
 import java.util.Objects;
 
 @Entity
@@ -14,28 +15,35 @@ public class Articles {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
+    private String slug;
     private long user;
     private String title;
     private String description;
     private String body;
-    // private List<Tags> tags;
+    private List<String> tags;
+
 
 
     public Articles() {
     }
-    public Articles(long user, String title, String description, String body) {
+
+    public Articles(long user, String title, String description, String body,List<String> tags) {
         this.user = user;
         this.title = title;
         this.description = description;
         this.body = body;
+        this.tags = tags;
+
     }
 
-    public Articles(long id, long user, String title, String description, String body) {
+    public Articles(long id, String slug, long user, String title, String description, String body, List<String> tags) {
         this.id = id;
+        this.slug = slug;
         this.user = user;
         this.title = title;
         this.description = description;
         this.body = body;
+        this.tags = tags;
     }
 
     public long getId() {
@@ -44,6 +52,18 @@ public class Articles {
 
     public void setId(long id) {
         this.id = id;
+    }
+
+    public String getSlug() {
+        return this.slug;
+    }
+
+    public void setSlug() {
+      String title= this.title.trim();
+     String[] words= title.split(" ");
+     String.join("-", words);
+    //  also
+    //  title.replaceAll("\\s+", "-")
     }
 
     public long getUser() {
@@ -78,8 +98,21 @@ public class Articles {
         this.body = body;
     }
 
+    public List<String> getTags() {
+        return this.tags;
+    }
+
+    public void setTags(List<String> tags) {
+        this.tags = tags;
+    }
+
     public Articles id(long id) {
         setId(id);
+        return this;
+    }
+
+    public Articles slug(String slug) {
+        setSlug(slug);
         return this;
     }
 
@@ -103,6 +136,11 @@ public class Articles {
         return this;
     }
 
+    public Articles tags(List<String> tags) {
+        setTags(tags);
+        return this;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (o == this)
@@ -111,26 +149,28 @@ public class Articles {
             return false;
         }
         Articles articles = (Articles) o;
-        return id == articles.id && user == articles.user && Objects.equals(title, articles.title) && Objects.equals(description, articles.description) && Objects.equals(body, articles.body);
+        return id == articles.id && Objects.equals(slug, articles.slug) && user == articles.user && Objects.equals(title, articles.title) && Objects.equals(description, articles.description) && Objects.equals(body, articles.body) && Objects.equals(tags, articles.tags);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, user, title, description, body);
+        return Objects.hash(id, slug, user, title, description, body, tags);
     }
 
     @Override
     public String toString() {
         return "{" +
             " id='" + getId() + "'" +
+            ", slug='" + getSlug() + "'" +
             ", user='" + getUser() + "'" +
             ", title='" + getTitle() + "'" +
             ", description='" + getDescription() + "'" +
             ", body='" + getBody() + "'" +
+            ", tags='" + getTags() + "'" +
             "}";
     }
 
- 
+  
 
 
     

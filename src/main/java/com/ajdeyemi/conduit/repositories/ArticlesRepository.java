@@ -11,5 +11,5 @@ import com.ajdeyemi.conduit.models.Articles;
 public interface ArticlesRepository extends JpaRepository<Articles,Long> {
     Page<Articles> findAll(Pageable pageable);
     List<Articles>findByUser(long user);
-    Articles findByTitle(String title);
+    Articles findBySlug(String slug);
 }
