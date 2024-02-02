@@ -1,6 +1,7 @@
 package com.ajdeyemi.conduit.services;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -46,11 +47,36 @@ public class CommentsService {
     public List<Comments> getArticleComments(String slug)throws Exception{
         if(slug!=null){
             Articles getArticle= articlesRepository.findBySlug(slug);
-            List <Comments> comments= commentsRepository.findByArticle(getArticle.getId());
-            return comments;
+            if(getArticle!=null){
+                List <Comments> comments= commentsRepository.findByArticle(getArticle.getId());
+                return comments;
+            }else{
+                throw new Exception("This article does not exist"); 
+            }
+        
         }else{
             throw new Exception("Article slug required");  
         }
     }
-    
+
+    public String deleteComment(String slug, long id) throws Exception{
+        if(slug!=null){
+            Articles getArticle= articlesRepository.findBySlug(slug);
+            if(getArticle!=null){
+               Optional <Comments> comments= commentsRepository.findById(id);  
+               if(comments.isPresent() && comments.get().getArticle()==getArticle.getId()){
+                commentsRepository.delete(comments.get());
+                return "Successfully deleted the comment";
+               }else{
+                throw new Exception("This Operation is not permitted"); 
+               }              
+               
+            }else{
+                throw new Exception("This article does not exist"); 
+            }
+        }else{
+            throw new Exception("Article slug required");  
+        }
+    }
+
 }
