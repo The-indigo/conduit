@@ -6,13 +6,16 @@ import java.util.HashMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.ajdeyemi.conduit.models.LoginResponse;
+import com.ajdeyemi.conduit.models.Profile;
 import com.ajdeyemi.conduit.models.Users;
 import com.ajdeyemi.conduit.services.UsersService;
 
@@ -73,6 +76,17 @@ public class UsersController {
              user.getUsername(),
               user.getRole());
               return ResponseEntity.ok().body(updateUser);
+        }catch(Exception e){
+            HashMap<String,String> error= new HashMap<>();
+            error.put("error",e.getMessage() );
+            return ResponseEntity.status(401).body(error);
+        }
+    }
+    @GetMapping("/profiles/{username}")
+    public ResponseEntity<?> getProfile(@PathVariable String username){
+        try{
+            Profile profile= usersService.getProfile(username);
+            return ResponseEntity.ok().body(profile);
         }catch(Exception e){
             HashMap<String,String> error= new HashMap<>();
             error.put("error",e.getMessage() );
