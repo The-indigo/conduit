@@ -1,5 +1,6 @@
 package com.ajdeyemi.conduit.models;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -20,8 +21,9 @@ public class Articles {
     private String title;
     private String description;
     private String body;
-    private List<String> tags;
+    @Column(name = "favoritecount")
     private int favoriteCount;
+
 
 
 
@@ -29,24 +31,22 @@ public class Articles {
     public Articles() {
     }
 
-
-    public Articles(long author, String title, String description, String body,List<String> tags) {
+    public Articles( String slug, long author, String title, String description, String body, int favoriteCount) {
+        this.slug = slug;
         this.author = author;
         this.title = title;
         this.description = description;
         this.body = body;
-        this.tags = tags;
-
+        this.favoriteCount = favoriteCount;
     }
 
-    public Articles(long id, String slug, long author, String title, String description, String body, List<String> tags, int favoriteCount) {
+    public Articles(long id, String slug, long author, String title, String description, String body, int favoriteCount) {
         this.id = id;
         this.slug = slug;
         this.author = author;
         this.title = title;
         this.description = description;
         this.body = body;
-        this.tags = tags;
         this.favoriteCount = favoriteCount;
     }
 
@@ -62,13 +62,9 @@ public class Articles {
         return this.slug;
     }
 
-    public void setSlug() {
-        String title= this.title.trim();
-       String[] words= title.split(" ");
-       String.join("-", words);
-      //  also
-      //  title.replaceAll("\\s+", "-")
-      }
+    public void setSlug(String slug) {
+        this.slug = slug;
+    }
 
     public long getAuthor() {
         return this.author;
@@ -102,14 +98,6 @@ public class Articles {
         this.body = body;
     }
 
-    public List<String> getTags() {
-        return this.tags;
-    }
-
-    public void setTags(List<String> tags) {
-        this.tags = tags;
-    }
-
     public int getFavoriteCount() {
         return this.favoriteCount;
     }
@@ -123,8 +111,8 @@ public class Articles {
         return this;
     }
 
-    public Articles slug() {
-        setSlug();
+    public Articles slug(String slug) {
+        setSlug(slug);
         return this;
     }
 
@@ -148,11 +136,6 @@ public class Articles {
         return this;
     }
 
-    public Articles tags(List<String> tags) {
-        setTags(tags);
-        return this;
-    }
-
     public Articles favoriteCount(int favoriteCount) {
         setFavoriteCount(favoriteCount);
         return this;
@@ -166,12 +149,12 @@ public class Articles {
             return false;
         }
         Articles articles = (Articles) o;
-        return id == articles.id && Objects.equals(slug, articles.slug) && author == articles.author && Objects.equals(title, articles.title) && Objects.equals(description, articles.description) && Objects.equals(body, articles.body) && Objects.equals(tags, articles.tags) && favoriteCount == articles.favoriteCount;
+        return id == articles.id && Objects.equals(slug, articles.slug) && author == articles.author && Objects.equals(title, articles.title) && Objects.equals(description, articles.description) && Objects.equals(body, articles.body) && favoriteCount == articles.favoriteCount;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, slug, author, title, description, body, tags, favoriteCount);
+        return Objects.hash(id, slug, author, title, description, body, favoriteCount);
     }
 
     @Override
@@ -183,11 +166,9 @@ public class Articles {
             ", title='" + getTitle() + "'" +
             ", description='" + getDescription() + "'" +
             ", body='" + getBody() + "'" +
-            ", tags='" + getTags() + "'" +
             ", favoriteCount='" + getFavoriteCount() + "'" +
             "}";
     }
-
 
     
 }

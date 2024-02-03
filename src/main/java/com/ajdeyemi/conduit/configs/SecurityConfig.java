@@ -47,7 +47,7 @@ public AuthenticationManager authenticationManager(){
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception{
               http
-        .authorizeHttpRequests((authorize)->authorize.requestMatchers("/api/users/","/api/users/login").permitAll().anyRequest().authenticated())
+        .authorizeHttpRequests((authorize)->authorize.requestMatchers("/api/users/","/api/users/login", "/api/articles/add").permitAll().anyRequest().authenticated())
         .csrf((csrf) -> csrf.disable())
         .sessionManagement((session) -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
         .oauth2ResourceServer((oauth2)->oauth2.jwt(Customizer.withDefaults()));

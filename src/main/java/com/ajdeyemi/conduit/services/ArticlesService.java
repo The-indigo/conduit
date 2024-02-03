@@ -19,6 +19,8 @@ import com.ajdeyemi.conduit.repositories.FollowersRepository;
 import com.ajdeyemi.conduit.repositories.TagsRepository;
 import com.ajdeyemi.conduit.repositories.UsersRepository;
 
+import net.datafaker.Faker;
+
 @Service
 public class ArticlesService {
     @Autowired
@@ -32,6 +34,37 @@ public class ArticlesService {
 
     @Autowired
     UsersRepository usersRepository;
+
+     Faker faker = new Faker();
+     
+     
+    public void generateAndSaveData(int numberOfEntries) {
+
+        List<String> tags= new ArrayList<>();
+        tags.add(faker.book().genre());
+        tags.add(faker.book().genre());
+        tags.add(faker.book().genre());
+        
+       
+        for (int i = 0; i < numberOfEntries; i++) {
+            Articles article = new Articles();
+            article.setAuthor(0);
+            String title=faker.book().title();
+            article.setTitle(title);
+            article.setDescription(faker.text().text(20));
+            article.setBody(faker.text().text(150, 300));
+            article.setFavoriteCount(0);
+            String slug=title.trim().replace(" ", "-");
+            article.setSlug(slug);
+            articlesRepository.save(article);
+         
+                    for(String tag: tags){
+            Tags articleTag= new Tags(tag,article.getId());
+            tagsRepository.save(articleTag);
+        }
+            
+        }
+    }
 
     public Page<Articles> geArticles(int page, int size){
         // List<Passenger> passenger = repository.findByOrderBySeatNumberAsc(Limit.of(1));
@@ -68,30 +101,30 @@ return articles;
     }
 
 
-    public Articles createArticle(String title, String description, String body,List<String> tags) throws Exception{
-        String authenticated = SecurityContextHolder.getContext().getAuthentication().getName();
-    Users currentUser= usersRepository.findUsersByEmail(authenticated);
-        // long user, String title, String description, String body
-        if(title==null){
-            throw new Exception("Title is a required field");
-        }
-        if(description==null){
-            throw new Exception("Description is a required field");
-        }
-        if(body==null){
-            throw new Exception("Body is a required field");
-        }
-        if(title.isEmpty() || description.isEmpty() || body.isEmpty() || tags.size()==0){
-            throw new Exception("You cannot have empty fields");
-        }
-        Articles articles=new Articles(currentUser.getId(),title,description,body,tags);
-        articlesRepository.save(articles);
-        for(String tag: tags){
-            Tags articleTag= new Tags(tag,articles.getId());
-            tagsRepository.save(articleTag);
-        }
-        return articles;
-    }
+    // public Articles createArticle(String title, String description, String body,List<String> tags) throws Exception{
+    //     String authenticated = SecurityContextHolder.getContext().getAuthentication().getName();
+    // Users currentUser= usersRepository.findUsersByEmail(authenticated);
+    //     // long user, String title, String description, String body
+    //     if(title==null){
+    //         throw new Exception("Title is a required field");
+    //     }
+    //     if(description==null){
+    //         throw new Exception("Description is a required field");
+    //     }
+    //     if(body==null){
+    //         throw new Exception("Body is a required field");
+    //     }
+    //     if(title.isEmpty() || description.isEmpty() || body.isEmpty() || tags.size()==0){
+    //         throw new Exception("You cannot have empty fields");
+    //     }
+    //     // Articles articles=new Articles(currentUser.getId(),"",title,description,body);
+    //     articlesRepository.save(articles);
+    //     for(String tag: tags){
+    //         Tags articleTag= new Tags(tag,articles.getId());
+    //         tagsRepository.save(articleTag);
+    //     }
+    //     return articles;
+    // }
 
 
     public Articles updateArticle(String slug,String title, String description, String body)throws Exception{
