@@ -5,6 +5,7 @@ import java.util.HashMap;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -97,6 +98,18 @@ public class UsersController {
     public ResponseEntity<?> followUser(@PathVariable String username){
         try{
             Profile profile=usersService.followUser(username);
+            return ResponseEntity.ok().body(profile);
+        }catch(Exception e){
+            HashMap<String,String> error= new HashMap<>();
+            error.put("error",e.getMessage() );
+            return ResponseEntity.status(401).body(error);
+        }
+    }
+
+    @DeleteMapping("profiles/{username}/follow")
+    public ResponseEntity<?>unFollowUser(@PathVariable String username){
+        try{
+            Profile profile=usersService.unFollowUser(username);
             return ResponseEntity.ok().body(profile);
         }catch(Exception e){
             HashMap<String,String> error= new HashMap<>();

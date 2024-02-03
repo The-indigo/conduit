@@ -177,7 +177,7 @@ public class UsersService {
         }
     }
 
-    public Profile unfollowUser(String username) throws Exception{
+    public Profile unFollowUser(String username) throws Exception{
         String authenticated = SecurityContextHolder.getContext().getAuthentication().getName();
         Users currentUser = usersRepository.findUsersByEmail(authenticated);
         Users user= usersRepository.findUsersByUsername(username);
