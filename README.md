@@ -40,8 +40,8 @@ role [] with values between User, Admin or both
 <hr>
 spring.datasource.url= jdbc:postgresql://localhost:5432/conduit
 <br>
-spring.datasource.username=<yourusername>
+spring.datasource.username= yourusername
   <br>
-spring.datasource.password=<yourpassword>
+spring.datasource.password= yourpassword
   <br>
 spring.jpa.properties.hibernate.dialect = org.hibernate.dialect.PostgreSQLDialect
