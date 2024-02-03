@@ -7,7 +7,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
-import java.util.List;
+import java.util.Date;
 import java.util.Objects;
 
 @Entity
@@ -23,24 +23,27 @@ public class Articles {
     private String body;
     @Column(name = "favoritecount")
     private int favoriteCount;
-
-
+    @Column(name = "createdat")
+    private Date createdAt;
+    @Column(name = "updatedat")
+    private Date updatedAt;
 
 
 
     public Articles() {
     }
-
-    public Articles( String slug, long author, String title, String description, String body, int favoriteCount) {
+    public Articles(String slug, long author, String title, String description, String body, int favoriteCount, Date createdAt, Date updatedAt) {
         this.slug = slug;
         this.author = author;
         this.title = title;
         this.description = description;
         this.body = body;
         this.favoriteCount = favoriteCount;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
     }
 
-    public Articles(long id, String slug, long author, String title, String description, String body, int favoriteCount) {
+    public Articles(long id, String slug, long author, String title, String description, String body, int favoriteCount, Date createdAt, Date updatedAt) {
         this.id = id;
         this.slug = slug;
         this.author = author;
@@ -48,6 +51,8 @@ public class Articles {
         this.description = description;
         this.body = body;
         this.favoriteCount = favoriteCount;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
     }
 
     public long getId() {
@@ -106,6 +111,22 @@ public class Articles {
         this.favoriteCount = favoriteCount;
     }
 
+    public Date getCreatedAt() {
+        return this.createdAt;
+    }
+
+    public void setCreatedAt(Date createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public Date getUpdatedAt() {
+        return this.updatedAt;
+    }
+
+    public void setUpdatedAt(Date updatedAt) {
+        this.updatedAt = updatedAt;
+    }
+
     public Articles id(long id) {
         setId(id);
         return this;
@@ -141,6 +162,16 @@ public class Articles {
         return this;
     }
 
+    public Articles createdAt(Date createdAt) {
+        setCreatedAt(createdAt);
+        return this;
+    }
+
+    public Articles updatedAt(Date updatedAt) {
+        setUpdatedAt(updatedAt);
+        return this;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (o == this)
@@ -149,12 +180,12 @@ public class Articles {
             return false;
         }
         Articles articles = (Articles) o;
-        return id == articles.id && Objects.equals(slug, articles.slug) && author == articles.author && Objects.equals(title, articles.title) && Objects.equals(description, articles.description) && Objects.equals(body, articles.body) && favoriteCount == articles.favoriteCount;
+        return id == articles.id && Objects.equals(slug, articles.slug) && author == articles.author && Objects.equals(title, articles.title) && Objects.equals(description, articles.description) && Objects.equals(body, articles.body) && favoriteCount == articles.favoriteCount && Objects.equals(createdAt, articles.createdAt) && Objects.equals(updatedAt, articles.updatedAt);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, slug, author, title, description, body, favoriteCount);
+        return Objects.hash(id, slug, author, title, description, body, favoriteCount, createdAt, updatedAt);
     }
 
     @Override
@@ -167,8 +198,14 @@ public class Articles {
             ", description='" + getDescription() + "'" +
             ", body='" + getBody() + "'" +
             ", favoriteCount='" + getFavoriteCount() + "'" +
+            ", createdAt='" + getCreatedAt() + "'" +
+            ", updatedAt='" + getUpdatedAt() + "'" +
             "}";
     }
+
+
+
+
 
     
 }

@@ -27,7 +27,7 @@ public class ArticlesController{
 
     @PostMapping("/add")
     public void addarticle(){
-        articlesService.generateAndSaveData(25);
+        articlesService.generateAndSaveData(1);
     }
 
 
