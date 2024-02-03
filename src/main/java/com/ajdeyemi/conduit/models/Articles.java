@@ -7,7 +7,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
-import java.util.Date;
+import java.time.Instant;
 import java.util.Objects;
 
 @Entity
@@ -24,26 +24,17 @@ public class Articles {
     @Column(name = "favoritecount")
     private int favoriteCount;
     @Column(name = "createdat")
-    private Date createdAt;
+    private Instant createdAt;
     @Column(name = "updatedat")
-    private Date updatedAt;
+    private Instant updatedAt;
+
 
 
 
     public Articles() {
     }
-    public Articles(String slug, long author, String title, String description, String body, int favoriteCount, Date createdAt, Date updatedAt) {
-        this.slug = slug;
-        this.author = author;
-        this.title = title;
-        this.description = description;
-        this.body = body;
-        this.favoriteCount = favoriteCount;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
-    }
 
-    public Articles(long id, String slug, long author, String title, String description, String body, int favoriteCount, Date createdAt, Date updatedAt) {
+    public Articles(long id, String slug, long author, String title, String description, String body, int favoriteCount, Instant createdAt, Instant updatedAt) {
         this.id = id;
         this.slug = slug;
         this.author = author;
@@ -111,19 +102,19 @@ public class Articles {
         this.favoriteCount = favoriteCount;
     }
 
-    public Date getCreatedAt() {
+    public Instant getCreatedAt() {
         return this.createdAt;
     }
 
-    public void setCreatedAt(Date createdAt) {
+    public void setCreatedAt(Instant createdAt) {
         this.createdAt = createdAt;
     }
 
-    public Date getUpdatedAt() {
+    public Instant getUpdatedAt() {
         return this.updatedAt;
     }
 
-    public void setUpdatedAt(Date updatedAt) {
+    public void setUpdatedAt(Instant updatedAt) {
         this.updatedAt = updatedAt;
     }
 
@@ -162,12 +153,12 @@ public class Articles {
         return this;
     }
 
-    public Articles createdAt(Date createdAt) {
+    public Articles createdAt(Instant createdAt) {
         setCreatedAt(createdAt);
         return this;
     }
 
-    public Articles updatedAt(Date updatedAt) {
+    public Articles updatedAt(Instant updatedAt) {
         setUpdatedAt(updatedAt);
         return this;
     }
@@ -202,7 +193,7 @@ public class Articles {
             ", updatedAt='" + getUpdatedAt() + "'" +
             "}";
     }
-
+    
 
 
 

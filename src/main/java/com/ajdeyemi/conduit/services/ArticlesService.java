@@ -1,12 +1,9 @@
 package com.ajdeyemi.conduit.services;
 
-import java.sql.Date;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
+import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -41,41 +38,6 @@ public class ArticlesService {
 
     Faker faker = new Faker();
 
-    public void generateAndSaveData(int numberOfEntries) {
-
-        List<String> tags = new ArrayList<>();
-        tags.add(faker.book().genre());
-        tags.add(faker.book().genre());
-        tags.add(faker.book().genre());
-
-        for (int i = 0; i < numberOfEntries; i++) {
-            Articles article = new Articles();
-            article.setAuthor(0);
-            String title = faker.book().title();
-            article.setTitle(title);
-            article.setDescription(faker.text().text(20));
-            article.setBody(faker.text().text(150, 300));
-            article.setFavoriteCount(0);
-               
-              Calendar startDate = Calendar.getInstance();
-        startDate.add(Calendar.YEAR, -1);  // One year ago
-        Calendar endDate = Calendar.getInstance();
-
-        // Generate a random date between the start and end dates
-        Date randomDate = new Date(faker.date().between(startDate.getTime(), endDate.getTime()).getTime());
-
-   article.setCreatedAt(randomDate);
-            String slug = title.trim().replace(" ", "-");
-            article.setSlug(slug);
-            articlesRepository.save(article);
-
-            for (String tag : tags) {
-                Tags articleTag = new Tags(tag, article.getId());
-                tagsRepository.save(articleTag);
-            }
-
-        }
-    }
 
     public Page<Articles> geArticles(int page, int size) {
         // List<Passenger> passenger =
@@ -177,4 +139,48 @@ public class ArticlesService {
             throw new Exception("Article slug required");
         }
     }
+
+
+
+
+    public void generateAndSaveData(int numberOfEntries) {
+
+        List<String> tags = new ArrayList<>();
+        tags.add(faker.book().genre());
+        tags.add(faker.book().genre());
+        tags.add(faker.book().genre());
+
+        for (int i = 0; i < numberOfEntries; i++) {
+            Articles article = new Articles();
+            article.setAuthor(0);
+            String title = faker.book().title();
+            article.setTitle(title);
+            article.setDescription(faker.text().text(20));
+            article.setBody(faker.text().text(150, 300));
+            article.setFavoriteCount(0);
+
+      Instant startDate = Instant.now().minusSeconds(31536000); // One year ago in seconds
+      Instant endDate = Instant.now();
+
+      long randomTimestamp = ThreadLocalRandom.current().nextLong(startDate.toEpochMilli(), endDate.toEpochMilli());
+
+      
+
+   article.setCreatedAt( Instant.ofEpochMilli(randomTimestamp));
+   article.setUpdatedAt(Instant.ofEpochMilli(randomTimestamp));
+            String slug = title.trim().replace(" ", "-");
+            article.setSlug(slug);
+            articlesRepository.save(article);
+
+            for (String tag : tags) {
+                Tags articleTag = new Tags(tag, article.getId());
+                tagsRepository.save(articleTag);
+            }
+
+        }
+    }
+
 }
+
+
+
