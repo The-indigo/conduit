@@ -6,7 +6,35 @@ Framework: SpringBoot
 
 <br>
 Includes Spring security with oauth2 using Jwt authentication
+<hr>
 
+For Authentication "/api/users/login"
+<br>
+Required Objects 
+{
+<br>
+email,
+<br>
+password
+<br>
+}
+
+<hr>
+Registration Endpoint "/api/users"
+<br>
+Required Objects 
+{
+<br>
+email,
+<br>
+password,
+<br>
+username,
+<br>
+role [] with values between User, Admin or both
+<br>
+}
+<br>
 <p>To run the application, add the following properties in your application.properties file</p>
 
 <hr>
