@@ -48,7 +48,7 @@ public class ArticlesService {
    List<Followers> followers= followersRepository.findFollowers(currentUser.getId());
 //    Get articles of each followers
 for(Followers follower: followers){
-    List<Articles> articlesByFollower= articlesRepository.findByUser(follower.getId());
+    List<Articles> articlesByFollower= articlesRepository.findByAuthor(follower.getId());
     for(Articles article: articlesByFollower){
         articles.add(article);
     }
@@ -99,7 +99,7 @@ return articles;
         Users currentUser= usersRepository.findUsersByEmail(authenticated);
         if(slug!=null){
          Articles article= articlesRepository.findBySlug(slug);
-         if(article.getUser()==currentUser.getId()){
+         if(article.getAuthor()==currentUser.getId()){
             String setTitle= title!=null?title:article.getTitle();
             String setDescription= description!=null?description:article.getDescription();
             String setBody= body!=null?body:article.getBody();
@@ -122,7 +122,7 @@ return articles;
         Users currentUser= usersRepository.findUsersByEmail(authenticated);
         if(slug!=null){
             Articles article= articlesRepository.findBySlug(slug);  
-            if(article.getUser()==currentUser.getId()){
+            if(article.getAuthor()==currentUser.getId()){
                 articlesRepository.delete(article);
                 return article.getTitle() + " has been deleted successfully";
             }else{

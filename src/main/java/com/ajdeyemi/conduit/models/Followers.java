@@ -13,20 +13,20 @@ public class Followers {
       @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
-    private long user;
+    private long username;
     private long following;
 
 
     public Followers() {
     }
 
-    public Followers( long user, long following) {
-        this.user = user;
+    public Followers( long username, long following) {
+        this.username = username;
         this.following = following;
     }
-    public Followers(long id, long user, long following) {
+    public Followers(long id, long username, long following) {
         this.id = id;
-        this.user = user;
+        this.username = username;
         this.following = following;
     }
 
@@ -39,11 +39,11 @@ public class Followers {
     }
 
     public long getUser() {
-        return this.user;
+        return this.username;
     }
 
-    public void setUser(long user) {
-        this.user = user;
+    public void setUser(long username) {
+        this.username = username;
     }
 
     public long getFollowing() {
@@ -59,8 +59,8 @@ public class Followers {
         return this;
     }
 
-    public Followers user(long user) {
-        setUser(user);
+    public Followers username(long username) {
+        setUser(username);
         return this;
     }
 
@@ -77,19 +77,19 @@ public class Followers {
             return false;
         }
         Followers followers = (Followers) o;
-        return id == followers.id && user == followers.user && following == followers.following;
+        return id == followers.id && username == followers.username && following == followers.following;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, user, following);
+        return Objects.hash(id, username, following);
     }
 
     @Override
     public String toString() {
         return "{" +
             " id='" + getId() + "'" +
-            ", user='" + getUser() + "'" +
+            ", username='" + getUser() + "'" +
             ", following='" + getFollowing() + "'" +
             "}";
     }

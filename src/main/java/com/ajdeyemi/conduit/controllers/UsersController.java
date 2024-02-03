@@ -92,6 +92,18 @@ public class UsersController {
             return ResponseEntity.status(401).body(error);
         }
     }
+
+    @PostMapping("profiles/{username}/follow")
+    public ResponseEntity<?> followUser(@PathVariable String username){
+        try{
+            Profile profile=usersService.followUser(username);
+            return ResponseEntity.ok().body(profile);
+        }catch(Exception e){
+            HashMap<String,String> error= new HashMap<>();
+            error.put("error",e.getMessage() );
+            return ResponseEntity.status(401).body(error);
+        }
+    }
 }
 record UserLogin (String email,String password){};
 

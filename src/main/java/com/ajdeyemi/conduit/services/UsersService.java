@@ -138,7 +138,7 @@ public class UsersService {
                 // This is the current signed in user making the request
                 Users currentUser = usersRepository.findUsersByEmail(authenticated);
 
-                Followers following = followersRepository.findFollowingUser(currentUser.getId(), user.getId());
+                Followers following = followersRepository.findFollowingUsername(currentUser.getId(), user.getId());
                 if (following != null) {
                     Profile isFollowing = new Profile(user.getEmail(), user.getUsername(), true);
                     return isFollowing;
@@ -161,11 +161,13 @@ public class UsersService {
         Users currentUser = usersRepository.findUsersByEmail(authenticated);
         Users user= usersRepository.findUsersByUsername(username);
         if(user!=null){
-            Followers following = followersRepository.findFollowingUser(currentUser.getId(), user.getId());
+            Followers following = followersRepository.findFollowingUsername(currentUser.getId(), user.getId());
             if(following!=null){
                 throw new Exception("You are already following this user");
             }else{
+                System.out.println("inserting" + currentUser.getId() +"" + user.getId());
                 Followers follow= new Followers(currentUser.getId(), user.getId());
+                
                 followersRepository.save(follow);
                 Profile profile=new Profile(user.getEmail(), user.getUsername(), true);
                 return profile;
@@ -180,7 +182,7 @@ public class UsersService {
         Users currentUser = usersRepository.findUsersByEmail(authenticated);
         Users user= usersRepository.findUsersByUsername(username);
         if(user!=null){
-            Followers following = followersRepository.findFollowingUser(currentUser.getId(), user.getId());
+            Followers following = followersRepository.findFollowingUsername(currentUser.getId(), user.getId());
             if(following!=null){
                 followersRepository.delete(following);
                 Profile profile=new Profile(user.getEmail(), user.getUsername(), false);

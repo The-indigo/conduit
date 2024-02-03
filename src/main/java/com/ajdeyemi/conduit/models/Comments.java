@@ -14,23 +14,25 @@ public class Comments {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
     private long article;
-    private long user;
+    private long author;
     private String comment;
+
 
 
     public Comments() {
     }
 
-    public Comments( long article, long user, String comment) {
+
+    public Comments( long article, long author, String comment) {
         this.article = article;
-        this.user = user;
+        this.author = author;
         this.comment = comment;
     }
 
-    public Comments(long id, long article, long user, String comment) {
+    public Comments(long id, long article, long author, String comment) {
         this.id = id;
         this.article = article;
-        this.user = user;
+        this.author = author;
         this.comment = comment;
     }
 
@@ -50,12 +52,12 @@ public class Comments {
         this.article = article;
     }
 
-    public long getUser() {
-        return this.user;
+    public long getAuthor() {
+        return this.author;
     }
 
-    public void setUser(long user) {
-        this.user = user;
+    public void setAuthor(long author) {
+        this.author = author;
     }
 
     public String getComment() {
@@ -76,8 +78,8 @@ public class Comments {
         return this;
     }
 
-    public Comments user(long user) {
-        setUser(user);
+    public Comments author(long author) {
+        setAuthor(author);
         return this;
     }
 
@@ -94,12 +96,12 @@ public class Comments {
             return false;
         }
         Comments comments = (Comments) o;
-        return id == comments.id && article == comments.article && user == comments.user && Objects.equals(comment, comments.comment);
+        return id == comments.id && article == comments.article && author == comments.author && Objects.equals(comment, comments.comment);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, article, user, comment);
+        return Objects.hash(id, article, author, comment);
     }
 
     @Override
@@ -107,7 +109,7 @@ public class Comments {
         return "{" +
             " id='" + getId() + "'" +
             ", article='" + getArticle() + "'" +
-            ", user='" + getUser() + "'" +
+            ", author='" + getAuthor() + "'" +
             ", comment='" + getComment() + "'" +
             "}";
     }

@@ -16,7 +16,7 @@ public class Articles {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
     private String slug;
-    private long user;
+    private long author;
     private String title;
     private String description;
     private String body;
@@ -29,8 +29,9 @@ public class Articles {
     public Articles() {
     }
 
-    public Articles(long user, String title, String description, String body,List<String> tags) {
-        this.user = user;
+
+    public Articles(long author, String title, String description, String body,List<String> tags) {
+        this.author = author;
         this.title = title;
         this.description = description;
         this.body = body;
@@ -38,11 +39,10 @@ public class Articles {
 
     }
 
-
-    public Articles(long id, String slug, long user, String title, String description, String body, List<String> tags, int favoriteCount) {
+    public Articles(long id, String slug, long author, String title, String description, String body, List<String> tags, int favoriteCount) {
         this.id = id;
         this.slug = slug;
-        this.user = user;
+        this.author = author;
         this.title = title;
         this.description = description;
         this.body = body;
@@ -61,7 +61,7 @@ public class Articles {
     public String getSlug() {
         return this.slug;
     }
-    
+
     public void setSlug() {
         String title= this.title.trim();
        String[] words= title.split(" ");
@@ -70,12 +70,12 @@ public class Articles {
       //  title.replaceAll("\\s+", "-")
       }
 
-    public long getUser() {
-        return this.user;
+    public long getAuthor() {
+        return this.author;
     }
 
-    public void setUser(long user) {
-        this.user = user;
+    public void setAuthor(long author) {
+        this.author = author;
     }
 
     public String getTitle() {
@@ -128,8 +128,8 @@ public class Articles {
         return this;
     }
 
-    public Articles user(long user) {
-        setUser(user);
+    public Articles author(long author) {
+        setAuthor(author);
         return this;
     }
 
@@ -166,12 +166,12 @@ public class Articles {
             return false;
         }
         Articles articles = (Articles) o;
-        return id == articles.id && Objects.equals(slug, articles.slug) && user == articles.user && Objects.equals(title, articles.title) && Objects.equals(description, articles.description) && Objects.equals(body, articles.body) && Objects.equals(tags, articles.tags) && favoriteCount == articles.favoriteCount;
+        return id == articles.id && Objects.equals(slug, articles.slug) && author == articles.author && Objects.equals(title, articles.title) && Objects.equals(description, articles.description) && Objects.equals(body, articles.body) && Objects.equals(tags, articles.tags) && favoriteCount == articles.favoriteCount;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, slug, user, title, description, body, tags, favoriteCount);
+        return Objects.hash(id, slug, author, title, description, body, tags, favoriteCount);
     }
 
     @Override
@@ -179,7 +179,7 @@ public class Articles {
         return "{" +
             " id='" + getId() + "'" +
             ", slug='" + getSlug() + "'" +
-            ", user='" + getUser() + "'" +
+            ", author='" + getAuthor() + "'" +
             ", title='" + getTitle() + "'" +
             ", description='" + getDescription() + "'" +
             ", body='" + getBody() + "'" +
@@ -187,7 +187,6 @@ public class Articles {
             ", favoriteCount='" + getFavoriteCount() + "'" +
             "}";
     }
-
 
 
     
