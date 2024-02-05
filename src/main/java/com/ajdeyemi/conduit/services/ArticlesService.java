@@ -66,8 +66,14 @@ public class ArticlesService {
     public HashMap<String,Object> getArticle(String slug) throws Exception {
         if (slug != null && !(slug.isBlank())) {
            List<ReturnedArticle> items=articlesRepository.getOneArticle(slug);
+           if(!(items.isEmpty())){
+
+           
            //Joins the tags array into one array and selects the tag field from the array of objects
-          var tags= items.stream().flatMap(item->item.getTag().stream()).map(item->item.getTag()).collect(Collectors.toList());
+          var tags= items.stream().flatMap(item->item.getTag().stream())
+                    .map(item->item.getTag())
+                    .collect(Collectors.toList());
+
          var author=items.get(0).getAuthor();
          var article =items.get(0).getArticle();
 
@@ -90,9 +96,11 @@ public class ArticlesService {
          HashMap<String, Object> result=new HashMap<>();
           result.put("article", articleObject);
             return result;
-
+           }else{
+            throw new Exception("This article cannot be found");
+           }
         } else {
-            throw new Exception("This Article cannot be found");
+            throw new Exception("Article Slug is required!!");
         }
     }
 
