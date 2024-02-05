@@ -34,6 +34,17 @@ public class Articles {
     public Articles() {
     }
 
+    public Articles(String slug, long author, String title, String description, String body, int favoriteCount, Instant createdAt, Instant updatedAt) {
+        this.slug = slug;
+        this.author = author;
+        this.title = title;
+        this.description = description;
+        this.body = body;
+        this.favoriteCount = favoriteCount;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
+    }
+
     public Articles(long id, String slug, long author, String title, String description, String body, int favoriteCount, Instant createdAt, Instant updatedAt) {
         this.id = id;
         this.slug = slug;

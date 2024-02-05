@@ -104,34 +104,62 @@ public class ArticlesService {
         }
     }
 
-    // public Articles createArticle(String title, String description, String
-    // body,List<String> tags) throws Exception{
-    // String authenticated =
-    // SecurityContextHolder.getContext().getAuthentication().getName();
-    // Users currentUser= usersRepository.findUsersByEmail(authenticated);
-    // // long user, String title, String description, String body
-    // if(title==null){
-    // throw new Exception("Title is a required field");
-    // }
-    // if(description==null){
-    // throw new Exception("Description is a required field");
-    // }
-    // if(body==null){
-    // throw new Exception("Body is a required field");
-    // }
-    // if(title.isEmpty() || description.isEmpty() || body.isEmpty() ||
-    // tags.size()==0){
-    // throw new Exception("You cannot have empty fields");
-    // }
-    // // Articles articles=new
-    // Articles(currentUser.getId(),"",title,description,body);
-    // articlesRepository.save(articles);
-    // for(String tag: tags){
-    // Tags articleTag= new Tags(tag,articles.getId());
-    // tagsRepository.save(articleTag);
-    // }
-    // return articles;
-    // }
+    public HashMap<String,Object> createArticle(String title, String description, String
+    body,List<String> tags) throws Exception{
+    String authenticated =
+    SecurityContextHolder.getContext().getAuthentication().getName();
+    Users currentUser= usersRepository.findUsersByEmail(authenticated);
+    System.out.println(currentUser.getEmail());
+    // long author, String title, String description, String body
+    if(title==null){
+    throw new Exception("Title is a required field");
+    }
+    if(description==null){
+    throw new Exception("Description is a required field");
+    }
+    if(body==null){
+    throw new Exception("Body is a required field");
+    }
+    if(tags==null){
+        throw new Exception("Tags is a required field");
+        }
+    if(title.isEmpty() || description.isEmpty() || body.isEmpty() ||
+    tags.size()==0 || tags.isEmpty()){
+    throw new Exception("You cannot have empty fields");
+    }
+    String slug = title.trim().replace(" ", "-");
+    int favoriteCount=0;
+    Instant createdAt = Instant.now();
+    Instant updatedAt = Instant.now();
+
+
+    Articles article=new Articles(slug,currentUser.getId(),title,description, body,favoriteCount, createdAt, updatedAt);
+    articlesRepository.save(article);
+    for(String tag: tags){
+    Tags articleTag= new Tags(tag,article.getId());
+    tagsRepository.save(articleTag);
+    }
+
+    HashMap<String, Object> authorObject=new HashMap<>();
+    authorObject.put("username", currentUser.getUsername());
+    authorObject.put("email", currentUser.getEmail());
+ 
+    HashMap<String, Object> articleObject=new HashMap<>();
+    articleObject.put("slug", article.getSlug());
+    articleObject.put("title", article.getTitle());
+    articleObject.put("description", article.getDescription());
+    articleObject.put("body",article.getBody());
+    articleObject.put("tagsList", tags);
+    articleObject.put("createdAt",article.getCreatedAt());
+    articleObject.put("updatedAt",article.getUpdatedAt());
+    articleObject.put("favoritesCount", article.getFavoriteCount());
+    articleObject.put("author", authorObject);
+
+
+    HashMap<String, Object> result=new HashMap<>();
+     result.put("article", articleObject);
+    return result;
+    }
 
     public Articles updateArticle(String slug, String title, String description, String body) throws Exception {
         String authenticated = SecurityContextHolder.getContext().getAuthentication().getName();
