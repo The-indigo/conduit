@@ -2,8 +2,10 @@ package com.ajdeyemi.conduit.services;
 
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -13,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import com.ajdeyemi.conduit.models.Articles;
 import com.ajdeyemi.conduit.models.Followers;
+import com.ajdeyemi.conduit.models.ReturnedArticle;
 import com.ajdeyemi.conduit.models.Tags;
 import com.ajdeyemi.conduit.models.Users;
 import com.ajdeyemi.conduit.repositories.ArticlesRepository;
@@ -40,8 +43,6 @@ public class ArticlesService {
 
 
     public Page<Articles> geArticles(int page, int size) {
-        // List<Passenger> passenger =
-        // repository.findByOrderBySeatNumberAsc(Limit.of(1));
         PageRequest articles = PageRequest.of(page, size);
         return articlesRepository.findAll(articles);
     }
@@ -62,11 +63,34 @@ public class ArticlesService {
         return articles;
     }
 
-    public Articles getArticle(String slug) throws Exception {
+    public HashMap<String,Object> getArticle(String slug) throws Exception {
         if (slug != null && !(slug.isBlank())) {
-            Articles article = articlesRepository.findBySlug(slug);
+           List<ReturnedArticle> items=articlesRepository.getOneArticle(slug);
+           //Joins the tags array into one array and selects the tag field from the array of objects
+          var tags= items.stream().flatMap(item->item.getTag().stream()).map(item->item.getTag()).collect(Collectors.toList());
+         var author=items.get(0).getAuthor();
+         var article =items.get(0).getArticle();
 
-            return article;
+         HashMap<String, Object> authorObject=new HashMap<>();
+         authorObject.put("username", author.getUsername());
+         authorObject.put("email", author.getEmail());
+      
+         HashMap<String, Object> articleObject=new HashMap<>();
+         articleObject.put("slug", article.getSlug());
+         articleObject.put("title", article.getTitle());
+         articleObject.put("description", article.getDescription());
+         articleObject.put("body",article.getBody());
+         articleObject.put("tagsList", tags);
+         articleObject.put("createdAt",article.getCreatedAt());
+         articleObject.put("updatedAt",article.getUpdatedAt());
+         articleObject.put("favoritesCount", article.getFavoriteCount());
+         articleObject.put("author", authorObject);
+
+    
+         HashMap<String, Object> result=new HashMap<>();
+          result.put("article", articleObject);
+            return result;
+
         } else {
             throw new Exception("This Article cannot be found");
         }
