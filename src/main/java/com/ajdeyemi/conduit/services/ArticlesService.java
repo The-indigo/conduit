@@ -109,8 +109,6 @@ public class ArticlesService {
     String authenticated =
     SecurityContextHolder.getContext().getAuthentication().getName();
     Users currentUser= usersRepository.findUsersByEmail(authenticated);
-    System.out.println(currentUser.getEmail());
-    // long author, String title, String description, String body
     if(title==null){
     throw new Exception("Title is a required field");
     }
