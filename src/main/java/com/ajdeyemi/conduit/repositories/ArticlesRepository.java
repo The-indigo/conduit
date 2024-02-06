@@ -22,6 +22,6 @@ List<ReturnedArticle> getOneArticle(String slug);
 
 
 Page<Articles> findAll(Pageable pageable);
-    List<Articles>findByAuthor(long user);
+    // List<Articles>findByAuthor(long user);
     Articles findBySlug(String slug);
 }

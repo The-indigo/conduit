@@ -47,7 +47,7 @@ public class ArticlesService {
         return articlesRepository.findAll(articles);
     }
 
-    public List<Map<String,Object>> getFeed()throws Exception {
+    public Map<String,Object> getFeed()throws Exception {
         String authenticated = SecurityContextHolder.getContext().getAuthentication().getName();
         Users currentUser = usersRepository.findUsersByEmail(authenticated);
        List<ReturnedArticle> feed= articlesRepository.getFeed(currentUser.getId());
@@ -69,6 +69,7 @@ public class ArticlesService {
                     String username=user.getUsername();
                     String email=user.getEmail();
                     long id= user.getId();
+
                  Map<String, Object> authorMap= new HashMap<>();   
                  authorMap.put("username", username);
                  authorMap.put("email", email);
@@ -78,11 +79,24 @@ public class ArticlesService {
                     .filter(tag -> tag.getArticle()==(article.getId())).map(item -> item.getTag())
                     .collect(Collectors.toList());
 
-            Map<String, Object> resultMap = Map.of("article", article, "author",authorMap, "tagsList", articleTags);
-            return resultMap;
+                    Map<String, Object> articleMap= new HashMap<>();  
+                    articleMap.put("slug", article.getSlug());
+                    articleMap.put("title", article.getTitle() );
+                    articleMap.put( "description",article.getDescription());
+                    articleMap.put("body", article.getBody());
+                    articleMap.put("createdAt", article.getCreatedAt());
+                    articleMap.put("updatedAt", article.getUpdatedAt());
+                    articleMap.put("favoritesCount", article.getFavoriteCount());
+                    articleMap.put("tagsList", articleTags);
+                    articleMap.put("author",authorMap);
+
+            return articleMap;
         }).collect(Collectors.toList());
 
-        return result;
+        Map<String, Object> resultMap = new HashMap<>();
+        resultMap.put("articles", result);
+        return resultMap;
+
     }else{
         throw new Exception("Your feed is Empty.Try and follow users to read their latest articles");
     }
