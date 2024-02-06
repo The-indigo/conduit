@@ -52,7 +52,7 @@ public class ArticlesService {
         Users currentUser = usersRepository.findUsersByEmail(authenticated);
        List<ReturnedArticle> feed= articlesRepository.getFeed(currentUser.getId());
        if(!(feed.isEmpty())){
-        List<Articles> ot=feed.stream().map(item->item.getArticle()).collect(Collectors.toList());
+        List<Articles> articles=feed.stream().map(item->item.getArticle()).collect(Collectors.toList());
 
         List<Tags>tags =feed.stream()
                     .flatMap(item->item.getTag().stream())
@@ -60,12 +60,11 @@ public class ArticlesService {
         List<Users> author =feed.stream().map(item->item.getAuthor()).collect(Collectors.toList());
       
 
-        List<Map<String, Object>> result = ot.stream().map(article -> {
+        List<Map<String, Object>> result = articles.stream().map(article -> {
             var authorId = article.getAuthor();
             Users user = author.stream()
                     .filter(u -> u.getId()==(authorId) )
                     .findFirst().get();
-                    // .orElse(new Users()); // Replace with the appropriate default value for Users
 
             List<Tags> articleTags = tags.stream()
                     .filter(tag -> tag.getArticle()==(article.getId()))
