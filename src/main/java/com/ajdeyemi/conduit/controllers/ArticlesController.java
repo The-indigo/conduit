@@ -2,6 +2,7 @@ package com.ajdeyemi.conduit.controllers;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -25,10 +26,12 @@ public class ArticlesController{
 
     @GetMapping("")
     public ResponseEntity<?> getArticles(@RequestParam(defaultValue = "0") int page,
-    @RequestParam(defaultValue = "20") int limit
+    @RequestParam(defaultValue = "20") int limit,
+    @RequestParam Optional <String> tag,
+    @RequestParam Optional <String> author
     ){
         try{
-            return ResponseEntity.ok().body( articlesService.geArticles(page, limit));
+            return ResponseEntity.ok().body( articlesService.geArticles(page, limit,tag,author));
 
         }catch(Exception e){
             HashMap<String,String> error= new HashMap<>();
@@ -36,6 +39,8 @@ public class ArticlesController{
             return ResponseEntity.status(401).body(error);
         }
     }
+    
+
 
     @PostMapping("/add")
     public void addarticle(){

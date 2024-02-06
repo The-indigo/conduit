@@ -5,12 +5,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -42,26 +42,52 @@ public class ArticlesService {
 
     Faker faker = new Faker();
 
-    public Map<String, Object> geArticles(int page, int size) throws Exception {
+    public Map<String, Object> geArticles(int page, int size, Optional<String> byTag,
+            Optional<String> byAuthor) throws Exception {
         PageRequest request = PageRequest.of(page, size);
-        Page<ReturnedArticle> response = articlesRepository.getAllArticles(request);
-        if (!(response.isEmpty())) {
-            List<Articles> articles = response.stream().map(item -> item.getArticle()).collect(Collectors.toList());
+        if (byTag.isPresent()) {
+            String tag = byTag.get();
+            Page<ReturnedArticle> response = articlesRepository.getAllArticlesByTag(tag, request);
+            if (!(response.isEmpty())) {
+                return resultMap(response);
+            } else {
+                throw new Exception("No articles yet");
+            }
 
-            List<Tags> tags = response.stream()
-                    .flatMap(item -> item.getTag().stream())
-                    .collect(Collectors.toList());
-            List<Users> author = response.stream().map(item -> item.getAuthor()).collect(Collectors.toList());
-
-            List<Map<String, Object>> result = articleObjectList(articles, tags, author);
-            Map<String, Object> resultMap = new HashMap<>();
-            resultMap.put("articles", result);
-            resultMap.put("total", response.getNumberOfElements());
-            return resultMap;
-
-        } else {
-            throw new Exception("No articles yet");
         }
+        else if (byAuthor.isPresent()) {
+            String authorIs = byAuthor.get();
+            Page<ReturnedArticle> response = articlesRepository.getAllArticlesByAuthor(authorIs, request);
+            if (!(response.isEmpty())) {
+                return resultMap(response);
+            } else {
+                throw new Exception("No articles yet");
+            }
+        } else {
+            Page<ReturnedArticle> response = articlesRepository.getAllArticles(request);
+            if (!(response.isEmpty())) {
+                return resultMap(response);
+
+            } else {
+                throw new Exception("No articles yet");
+            }
+
+        }
+    }
+
+    private Map<String, Object> resultMap(Page<ReturnedArticle> response) {
+        List<Articles> articles = response.stream().map(item -> item.getArticle()).collect(Collectors.toList());
+
+        List<Tags> tags = response.stream()
+                .flatMap(item -> item.getTag().stream())
+                .collect(Collectors.toList());
+        List<Users> author = response.stream().map(item -> item.getAuthor()).collect(Collectors.toList());
+
+        List<Map<String, Object>> result = articleObjectList(articles, tags, author);
+        Map<String, Object> resultMap = new HashMap<>();
+        resultMap.put("articles", result);
+        resultMap.put("total", response.getNumberOfElements());
+        return resultMap;
     }
 
     public Map<String, Object> getFeed() throws Exception {
@@ -147,7 +173,7 @@ public class ArticlesService {
                 tags.size() == 0 || tags.isEmpty()) {
             throw new Exception("You cannot have empty fields");
         }
-        String slug = title.trim().replace(" ", "-");
+        String slug = title.trim().toLowerCase().replace(" ", "-");
         int favoriteCount = 0;
         Instant createdAt = Instant.now();
         Instant updatedAt = Instant.now();
@@ -220,7 +246,8 @@ public class ArticlesService {
         }
     }
 
-    // This method constructs the article object from the data returned from the Query
+    // This method constructs the article object from the data returned from the
+    // Query
     private List<Map<String, Object>> articleObjectList(List<Articles> articles, List<Tags> tags, List<Users> author) {
         return articles.stream().map(article -> {
             var authorId = article.getAuthor();
