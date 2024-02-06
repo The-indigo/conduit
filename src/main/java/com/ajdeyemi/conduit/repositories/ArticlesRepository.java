@@ -10,7 +10,6 @@ import org.springframework.data.jpa.repository.Query;
 import com.ajdeyemi.conduit.models.Articles;
 import com.ajdeyemi.conduit.models.ReturnedArticle;
 
-import jakarta.persistence.Tuple;
 
 
 public interface ArticlesRepository extends JpaRepository<Articles,Long> {

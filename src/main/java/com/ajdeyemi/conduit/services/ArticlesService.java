@@ -6,7 +6,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +15,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import com.ajdeyemi.conduit.models.Articles;
-import com.ajdeyemi.conduit.models.Followers;
 import com.ajdeyemi.conduit.models.ReturnedArticle;
 import com.ajdeyemi.conduit.models.Tags;
 import com.ajdeyemi.conduit.models.Users;
@@ -25,7 +23,6 @@ import com.ajdeyemi.conduit.repositories.FollowersRepository;
 import com.ajdeyemi.conduit.repositories.TagsRepository;
 import com.ajdeyemi.conduit.repositories.UsersRepository;
 
-import jakarta.persistence.Tuple;
 import net.datafaker.Faker;
 
 @Service
@@ -53,9 +50,6 @@ public class ArticlesService {
     public void getFeed() {
         String authenticated = SecurityContextHolder.getContext().getAuthentication().getName();
         Users currentUser = usersRepository.findUsersByEmail(authenticated);
-        // List<Articles> articles = new ArrayList<>();
-        // Get the user's followers
-        // Get articles of each followers
        List<ReturnedArticle> feed= articlesRepository.getFeed(currentUser.getId());
        if(!(feed.isEmpty())){
         List<Articles> ot=feed.stream().map(item->item.getArticle()).collect(Collectors.toList());
@@ -81,7 +75,7 @@ public class ArticlesService {
             return resultMap;
         }).collect(Collectors.toList());
 
-        result.forEach(System.out::println);
+        System.out.println(result);
     }
          
        }
