@@ -75,6 +75,9 @@ public class ArticlesService {
         }
     }
 
+
+// This is an helper method to return the result of the query
+// This helps to avoid writing duplicate code for each conditionals in the getArticles method
     private Map<String, Object> resultMap(Page<ReturnedArticle> response) {
         List<Articles> articles = response.stream().map(item -> item.getArticle()).collect(Collectors.toList());
 
