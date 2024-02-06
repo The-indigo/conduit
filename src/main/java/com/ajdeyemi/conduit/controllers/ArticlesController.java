@@ -61,5 +61,9 @@ public class ArticlesController{
             return ResponseEntity.status(401).body(error);
         }
     }
+    @GetMapping("/feed")
+    public void getFeed(){
+        articlesService.getFeed();
+    }
 }
 record Article (String title, String description, String body, List<String> tags){};

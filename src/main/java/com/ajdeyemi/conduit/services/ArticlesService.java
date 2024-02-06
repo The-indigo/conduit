@@ -4,7 +4,9 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +25,7 @@ import com.ajdeyemi.conduit.repositories.FollowersRepository;
 import com.ajdeyemi.conduit.repositories.TagsRepository;
 import com.ajdeyemi.conduit.repositories.UsersRepository;
 
+import jakarta.persistence.Tuple;
 import net.datafaker.Faker;
 
 @Service
@@ -47,33 +50,53 @@ public class ArticlesService {
         return articlesRepository.findAll(articles);
     }
 
-    public List<Articles> getFeed() {
+    public void getFeed() {
         String authenticated = SecurityContextHolder.getContext().getAuthentication().getName();
         Users currentUser = usersRepository.findUsersByEmail(authenticated);
-        List<Articles> articles = new ArrayList<>();
+        // List<Articles> articles = new ArrayList<>();
         // Get the user's followers
-        List<Followers> followers = followersRepository.findFollowers(currentUser.getId());
         // Get articles of each followers
-        for (Followers follower : followers) {
-            List<Articles> articlesByFollower = articlesRepository.findByAuthor(follower.getId());
-            for (Articles article : articlesByFollower) {
-                articles.add(article);
-            }
-        }
-        return articles;
+       List<ReturnedArticle> feed= articlesRepository.getFeed(currentUser.getId());
+       if(!(feed.isEmpty())){
+        List<Articles> ot=feed.stream().map(item->item.getArticle()).collect(Collectors.toList());
+
+        List<Tags>tags =feed.stream()
+                    .flatMap(item->item.getTag().stream())
+                    .collect(Collectors.toList());
+        List<Users> author =feed.stream().map(item->item.getAuthor()).collect(Collectors.toList());
+      
+
+        List<Map<String, Object>> result = ot.stream().map(article -> {
+            var authorId = article.getAuthor();
+            Users user = author.stream()
+                    .filter(u -> u.getId()==(authorId) )
+                    .findFirst().get();
+                    // .orElse(new Users()); // Replace with the appropriate default value for Users
+
+            List<Tags> articleTags = tags.stream()
+                    .filter(tag -> tag.getArticle()==(article.getId()))
+                    .collect(Collectors.toList());
+
+            Map<String, Object> resultMap = Map.of("article", article, "author", user, "tagsList", articleTags);
+            return resultMap;
+        }).collect(Collectors.toList());
+
+        result.forEach(System.out::println);
     }
+         
+       }
+        
+    
 
     public HashMap<String,Object> getArticle(String slug) throws Exception {
         if (slug != null && !(slug.isBlank())) {
            List<ReturnedArticle> items=articlesRepository.getOneArticle(slug);
+          
            if(!(items.isEmpty())){
-
-           
            //Joins the tags array into one array and selects the tag field from the array of objects
           var tags= items.stream().flatMap(item->item.getTag().stream())
                     .map(item->item.getTag())
                     .collect(Collectors.toList());
-
          var author=items.get(0).getAuthor();
          var article =items.get(0).getArticle();
 
@@ -91,8 +114,7 @@ public class ArticlesService {
          articleObject.put("updatedAt",article.getUpdatedAt());
          articleObject.put("favoritesCount", article.getFavoriteCount());
          articleObject.put("author", authorObject);
-
-    
+         
          HashMap<String, Object> result=new HashMap<>();
           result.put("article", articleObject);
             return result;
@@ -171,6 +193,7 @@ public class ArticlesService {
                 article.setTitle(setTitle);
                 article.setDescription(setDescription);
                 article.setBody(setBody);
+                article.setUpdatedAt(Instant.now());
                 articlesRepository.save(article);
                 return article;
             } else {
