@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -41,161 +42,142 @@ public class ArticlesService {
 
     Faker faker = new Faker();
 
+    public Map<String, Object> geArticles(int page, int size) throws Exception {
+        PageRequest request = PageRequest.of(page, size);
+        Page<ReturnedArticle> response = articlesRepository.getAllArticles(request);
+        if (!(response.isEmpty())) {
+            List<Articles> articles = response.stream().map(item -> item.getArticle()).collect(Collectors.toList());
 
-    public Page<Articles> geArticles(int page, int size) {
-        PageRequest articles = PageRequest.of(page, size);
-        return articlesRepository.findAll(articles);
+            List<Tags> tags = response.stream()
+                    .flatMap(item -> item.getTag().stream())
+                    .collect(Collectors.toList());
+            List<Users> author = response.stream().map(item -> item.getAuthor()).collect(Collectors.toList());
+
+            List<Map<String, Object>> result = articleObjectList(articles, tags, author);
+            Map<String, Object> resultMap = new HashMap<>();
+            resultMap.put("articles", result);
+            resultMap.put("total", response.getNumberOfElements());
+            return resultMap;
+
+        } else {
+            throw new Exception("No articles yet");
+        }
     }
 
-    public Map<String,Object> getFeed()throws Exception {
+    public Map<String, Object> getFeed() throws Exception {
         String authenticated = SecurityContextHolder.getContext().getAuthentication().getName();
         Users currentUser = usersRepository.findUsersByEmail(authenticated);
-       List<ReturnedArticle> feed= articlesRepository.getFeed(currentUser.getId());
-       if(!(feed.isEmpty())){
-        List<Articles> articles=feed.stream().map(item->item.getArticle()).collect(Collectors.toList());
+        List<ReturnedArticle> feed = articlesRepository.getFeed(currentUser.getId());
+        if (!(feed.isEmpty())) {
+            List<Articles> articles = feed.stream().map(item -> item.getArticle()).collect(Collectors.toList());
 
-        List<Tags>tags =feed.stream()
-                    .flatMap(item->item.getTag().stream())
+            List<Tags> tags = feed.stream()
+                    .flatMap(item -> item.getTag().stream())
                     .collect(Collectors.toList());
-        List<Users> author =feed.stream().map(item->item.getAuthor()).collect(Collectors.toList());
-      
+            List<Users> author = feed.stream().map(item -> item.getAuthor()).collect(Collectors.toList());
 
-        List<Map<String, Object>> result = articles.stream().map(article -> {
-            var authorId = article.getAuthor();
-            Users user = author.stream()
-                    .filter(u -> u.getId()==(authorId))
-                    .findFirst().get();
+            List<Map<String, Object>> result = articleObjectList(articles, tags, author);
 
-                    String username=user.getUsername();
-                    String email=user.getEmail();
-                    long id= user.getId();
+            Map<String, Object> resultMap = new HashMap<>();
+            resultMap.put("articles", result);
+            return resultMap;
 
-                 Map<String, Object> authorMap= new HashMap<>();   
-                 authorMap.put("username", username);
-                 authorMap.put("email", email);
-                 authorMap.put("id", id);
-                 
-            List<String> articleTags = tags.stream()
-                    .filter(tag -> tag.getArticle()==(article.getId())).map(item -> item.getTag())
-                    .collect(Collectors.toList());
+        } else {
+            throw new Exception("Your feed is Empty.Try and follow users to read their latest articles");
+        }
 
-                    Map<String, Object> articleMap= new HashMap<>();  
-                    articleMap.put("slug", article.getSlug());
-                    articleMap.put("title", article.getTitle() );
-                    articleMap.put( "description",article.getDescription());
-                    articleMap.put("body", article.getBody());
-                    articleMap.put("createdAt", article.getCreatedAt());
-                    articleMap.put("updatedAt", article.getUpdatedAt());
-                    articleMap.put("favoritesCount", article.getFavoriteCount());
-                    articleMap.put("tagsList", articleTags);
-                    articleMap.put("author",authorMap);
-
-            return articleMap;
-        }).collect(Collectors.toList());
-
-        Map<String, Object> resultMap = new HashMap<>();
-        resultMap.put("articles", result);
-        return resultMap;
-
-    }else{
-        throw new Exception("Your feed is Empty.Try and follow users to read their latest articles");
     }
-         
-       }
-        
-    
 
-    public HashMap<String,Object> getArticle(String slug) throws Exception {
+    public HashMap<String, Object> getArticle(String slug) throws Exception {
         if (slug != null && !(slug.isBlank())) {
-           List<ReturnedArticle> items=articlesRepository.getOneArticle(slug);
-          
-           if(!(items.isEmpty())){
-           //Joins the tags array into one array and selects the tag field from the array of objects
-          var tags= items.stream().flatMap(item->item.getTag().stream())
-                    .map(item->item.getTag())
-                    .collect(Collectors.toList());
-         var author=items.get(0).getAuthor();
-         var article =items.get(0).getArticle();
+            List<ReturnedArticle> items = articlesRepository.getOneArticle(slug);
 
-         HashMap<String, Object> authorObject=new HashMap<>();
-         authorObject.put("username", author.getUsername());
-         authorObject.put("email", author.getEmail());
-      
-         HashMap<String, Object> articleObject=new HashMap<>();
-         articleObject.put("slug", article.getSlug());
-         articleObject.put("title", article.getTitle());
-         articleObject.put("description", article.getDescription());
-         articleObject.put("body",article.getBody());
-         articleObject.put("tagsList", tags);
-         articleObject.put("createdAt",article.getCreatedAt());
-         articleObject.put("updatedAt",article.getUpdatedAt());
-         articleObject.put("favoritesCount", article.getFavoriteCount());
-         articleObject.put("author", authorObject);
-         
-         HashMap<String, Object> result=new HashMap<>();
-          result.put("article", articleObject);
-            return result;
-           }else{
-            throw new Exception("This article cannot be found");
-           }
+            if (!(items.isEmpty())) {
+                // Joins the tags array into one array and selects the tag field from the array
+                // of objects
+                var tags = items.stream().flatMap(item -> item.getTag().stream())
+                        .map(item -> item.getTag())
+                        .collect(Collectors.toList());
+                var author = items.get(0).getAuthor();
+                var article = items.get(0).getArticle();
+
+                HashMap<String, Object> authorObject = new HashMap<>();
+                authorObject.put("username", author.getUsername());
+                authorObject.put("email", author.getEmail());
+
+                HashMap<String, Object> articleObject = new HashMap<>();
+                articleObject.put("slug", article.getSlug());
+                articleObject.put("title", article.getTitle());
+                articleObject.put("description", article.getDescription());
+                articleObject.put("body", article.getBody());
+                articleObject.put("tagsList", tags);
+                articleObject.put("createdAt", article.getCreatedAt());
+                articleObject.put("updatedAt", article.getUpdatedAt());
+                articleObject.put("favoritesCount", article.getFavoriteCount());
+                articleObject.put("author", authorObject);
+
+                HashMap<String, Object> result = new HashMap<>();
+                result.put("article", articleObject);
+                return result;
+            } else {
+                throw new Exception("This article cannot be found");
+            }
         } else {
             throw new Exception("Article Slug is required!!");
         }
     }
 
-    public HashMap<String,Object> createArticle(String title, String description, String
-    body,List<String> tags) throws Exception{
-    String authenticated =
-    SecurityContextHolder.getContext().getAuthentication().getName();
-    Users currentUser= usersRepository.findUsersByEmail(authenticated);
-    if(title==null){
-    throw new Exception("Title is a required field");
-    }
-    if(description==null){
-    throw new Exception("Description is a required field");
-    }
-    if(body==null){
-    throw new Exception("Body is a required field");
-    }
-    if(tags==null){
-        throw new Exception("Tags is a required field");
+    public HashMap<String, Object> createArticle(String title, String description, String body, List<String> tags)
+            throws Exception {
+        String authenticated = SecurityContextHolder.getContext().getAuthentication().getName();
+        Users currentUser = usersRepository.findUsersByEmail(authenticated);
+        if (title == null) {
+            throw new Exception("Title is a required field");
         }
-    if(title.isEmpty() || description.isEmpty() || body.isEmpty() ||
-    tags.size()==0 || tags.isEmpty()){
-    throw new Exception("You cannot have empty fields");
-    }
-    String slug = title.trim().replace(" ", "-");
-    int favoriteCount=0;
-    Instant createdAt = Instant.now();
-    Instant updatedAt = Instant.now();
+        if (description == null) {
+            throw new Exception("Description is a required field");
+        }
+        if (body == null) {
+            throw new Exception("Body is a required field");
+        }
+        if (tags == null) {
+            throw new Exception("Tags is a required field");
+        }
+        if (title.isEmpty() || description.isEmpty() || body.isEmpty() ||
+                tags.size() == 0 || tags.isEmpty()) {
+            throw new Exception("You cannot have empty fields");
+        }
+        String slug = title.trim().replace(" ", "-");
+        int favoriteCount = 0;
+        Instant createdAt = Instant.now();
+        Instant updatedAt = Instant.now();
 
+        Articles article = new Articles(slug, currentUser.getId(), title, description, body, favoriteCount, createdAt,
+                updatedAt);
+        articlesRepository.save(article);
+        for (String tag : tags) {
+            Tags articleTag = new Tags(tag, article.getId());
+            tagsRepository.save(articleTag);
+        }
 
-    Articles article=new Articles(slug,currentUser.getId(),title,description, body,favoriteCount, createdAt, updatedAt);
-    articlesRepository.save(article);
-    for(String tag: tags){
-    Tags articleTag= new Tags(tag,article.getId());
-    tagsRepository.save(articleTag);
-    }
+        HashMap<String, Object> authorObject = new HashMap<>();
+        authorObject.put("username", currentUser.getUsername());
+        authorObject.put("email", currentUser.getEmail());
 
-    HashMap<String, Object> authorObject=new HashMap<>();
-    authorObject.put("username", currentUser.getUsername());
-    authorObject.put("email", currentUser.getEmail());
- 
-    HashMap<String, Object> articleObject=new HashMap<>();
-    articleObject.put("slug", article.getSlug());
-    articleObject.put("title", article.getTitle());
-    articleObject.put("description", article.getDescription());
-    articleObject.put("body",article.getBody());
-    articleObject.put("tagsList", tags);
-    articleObject.put("createdAt",article.getCreatedAt());
-    articleObject.put("updatedAt",article.getUpdatedAt());
-    articleObject.put("favoritesCount", article.getFavoriteCount());
-    articleObject.put("author", authorObject);
+        HashMap<String, Object> articleObject = new HashMap<>();
+        articleObject.put("slug", article.getSlug());
+        articleObject.put("title", article.getTitle());
+        articleObject.put("description", article.getDescription());
+        articleObject.put("body", article.getBody());
+        articleObject.put("tagsList", tags);
+        articleObject.put("createdAt", article.getCreatedAt());
+        articleObject.put("updatedAt", article.getUpdatedAt());
+        articleObject.put("favoritesCount", article.getFavoriteCount());
+        articleObject.put("author", authorObject);
 
-
-    HashMap<String, Object> result=new HashMap<>();
-     result.put("article", articleObject);
-    return result;
+        HashMap<String, Object> result = new HashMap<>();
+        result.put("article", articleObject);
+        return result;
     }
 
     public Articles updateArticle(String slug, String title, String description, String body) throws Exception {
@@ -238,8 +220,41 @@ public class ArticlesService {
         }
     }
 
+    // This method constructs the article object from the data returned from the Query
+    private List<Map<String, Object>> articleObjectList(List<Articles> articles, List<Tags> tags, List<Users> author) {
+        return articles.stream().map(article -> {
+            var authorId = article.getAuthor();
+            Users user = author.stream()
+                    .filter(u -> u.getId() == (authorId))
+                    .findFirst().get();
 
+            String username = user.getUsername();
+            String email = user.getEmail();
+            long id = user.getId();
 
+            Map<String, Object> authorMap = new HashMap<>();
+            authorMap.put("username", username);
+            authorMap.put("email", email);
+            authorMap.put("id", id);
+
+            List<String> articleTags = tags.stream()
+                    .filter(tag -> tag.getArticle() == (article.getId())).map(item -> item.getTag())
+                    .collect(Collectors.toList());
+
+            Map<String, Object> articleMap = new HashMap<>();
+            articleMap.put("slug", article.getSlug());
+            articleMap.put("title", article.getTitle());
+            articleMap.put("description", article.getDescription());
+            articleMap.put("body", article.getBody());
+            articleMap.put("createdAt", article.getCreatedAt());
+            articleMap.put("updatedAt", article.getUpdatedAt());
+            articleMap.put("favoritesCount", article.getFavoriteCount());
+            articleMap.put("tagsList", articleTags);
+            articleMap.put("author", authorMap);
+
+            return articleMap;
+        }).collect(Collectors.toList());
+    }
 
     public void generateAndSaveData(int numberOfEntries) {
 
@@ -257,15 +272,14 @@ public class ArticlesService {
             article.setBody(faker.text().text(150, 300));
             article.setFavoriteCount(0);
 
-      Instant startDate = Instant.now().minusSeconds(31536000); // One year ago in seconds
-      Instant endDate = Instant.now();
+            Instant startDate = Instant.now().minusSeconds(31536000); // One year ago in seconds
+            Instant endDate = Instant.now();
 
-      long randomTimestamp = ThreadLocalRandom.current().nextLong(startDate.toEpochMilli(), endDate.toEpochMilli());
+            long randomTimestamp = ThreadLocalRandom.current().nextLong(startDate.toEpochMilli(),
+                    endDate.toEpochMilli());
 
-      
-
-   article.setCreatedAt( Instant.ofEpochMilli(randomTimestamp));
-   article.setUpdatedAt(Instant.ofEpochMilli(randomTimestamp));
+            article.setCreatedAt(Instant.ofEpochMilli(randomTimestamp));
+            article.setUpdatedAt(Instant.ofEpochMilli(randomTimestamp));
             String slug = title.trim().replace(" ", "-");
             article.setSlug(slug);
             articlesRepository.save(article);
@@ -279,6 +293,3 @@ public class ArticlesService {
     }
 
 }
-
-
-
