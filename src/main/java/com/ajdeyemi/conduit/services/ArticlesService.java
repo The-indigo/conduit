@@ -47,7 +47,7 @@ public class ArticlesService {
         return articlesRepository.findAll(articles);
     }
 
-    public void getFeed() {
+    public List<Map<String,Object>> getFeed()throws Exception {
         String authenticated = SecurityContextHolder.getContext().getAuthentication().getName();
         Users currentUser = usersRepository.findUsersByEmail(authenticated);
        List<ReturnedArticle> feed= articlesRepository.getFeed(currentUser.getId());
@@ -63,18 +63,28 @@ public class ArticlesService {
         List<Map<String, Object>> result = articles.stream().map(article -> {
             var authorId = article.getAuthor();
             Users user = author.stream()
-                    .filter(u -> u.getId()==(authorId) )
+                    .filter(u -> u.getId()==(authorId))
                     .findFirst().get();
 
-            List<Tags> articleTags = tags.stream()
-                    .filter(tag -> tag.getArticle()==(article.getId()))
+                    String username=user.getUsername();
+                    String email=user.getEmail();
+                    long id= user.getId();
+                 Map<String, Object> authorMap= new HashMap<>();   
+                 authorMap.put("username", username);
+                 authorMap.put("email", email);
+                 authorMap.put("id", id);
+                 
+            List<String> articleTags = tags.stream()
+                    .filter(tag -> tag.getArticle()==(article.getId())).map(item -> item.getTag())
                     .collect(Collectors.toList());
 
-            Map<String, Object> resultMap = Map.of("article", article, "author", user, "tagsList", articleTags);
+            Map<String, Object> resultMap = Map.of("article", article, "author",authorMap, "tagsList", articleTags);
             return resultMap;
         }).collect(Collectors.toList());
 
-        System.out.println(result);
+        return result;
+    }else{
+        throw new Exception("Your feed is Empty.Try and follow users to read their latest articles");
     }
          
        }

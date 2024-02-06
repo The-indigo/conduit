@@ -2,6 +2,7 @@ package com.ajdeyemi.conduit.controllers;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -62,8 +63,14 @@ public class ArticlesController{
         }
     }
     @GetMapping("/feed")
-    public void getFeed(){
-        articlesService.getFeed();
+    public ResponseEntity<?> getFeed()throws Exception{
+        try{
+            return ResponseEntity.ok().body(articlesService.getFeed());
+        }catch(Exception e){
+            HashMap<String,String> error= new HashMap<>();
+            error.put("error",e.getMessage() );
+            return ResponseEntity.status(401).body(error);
+        }
     }
 }
 record Article (String title, String description, String body, List<String> tags){};
