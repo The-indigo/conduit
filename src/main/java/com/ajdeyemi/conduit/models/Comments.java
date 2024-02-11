@@ -1,10 +1,13 @@
 package com.ajdeyemi.conduit.models;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+
+import java.time.Instant;
 import java.util.Objects;
 
 @Entity
@@ -16,24 +19,38 @@ public class Comments {
     private long article;
     private long author;
     private String comment;
+    @Column(name = "createdat")
+    private Instant createdAt;
+    @Column(name = "updatedat")
+    private Instant updatedAt;
 
+
+
+
+
+  
+  
 
 
     public Comments() {
     }
 
-
-    public Comments( long article, long author, String comment) {
+    public Comments( long article, long author, String comment,Instant createdAt, Instant updatedAt) {
         this.article = article;
         this.author = author;
         this.comment = comment;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
     }
 
-    public Comments(long id, long article, long author, String comment) {
+
+    public Comments(long id, long article, long author, String comment, Instant createdAt, Instant updatedAt) {
         this.id = id;
         this.article = article;
         this.author = author;
         this.comment = comment;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
     }
 
     public long getId() {
@@ -68,6 +85,22 @@ public class Comments {
         this.comment = comment;
     }
 
+    public Instant getCreatedAt() {
+        return this.createdAt;
+    }
+
+    public void setCreatedAt(Instant createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public Instant getUpdatedAt() {
+        return this.updatedAt;
+    }
+
+    public void setUpdatedAt(Instant updatedAt) {
+        this.updatedAt = updatedAt;
+    }
+
     public Comments id(long id) {
         setId(id);
         return this;
@@ -88,6 +121,16 @@ public class Comments {
         return this;
     }
 
+    public Comments createdAt(Instant createdAt) {
+        setCreatedAt(createdAt);
+        return this;
+    }
+
+    public Comments updatedAt(Instant updatedAt) {
+        setUpdatedAt(updatedAt);
+        return this;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (o == this)
@@ -96,12 +139,12 @@ public class Comments {
             return false;
         }
         Comments comments = (Comments) o;
-        return id == comments.id && article == comments.article && author == comments.author && Objects.equals(comment, comments.comment);
+        return id == comments.id && article == comments.article && author == comments.author && Objects.equals(comment, comments.comment) && Objects.equals(createdAt, comments.createdAt) && Objects.equals(updatedAt, comments.updatedAt);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, article, author, comment);
+        return Objects.hash(id, article, author, comment, createdAt, updatedAt);
     }
 
     @Override
@@ -111,7 +154,10 @@ public class Comments {
             ", article='" + getArticle() + "'" +
             ", author='" + getAuthor() + "'" +
             ", comment='" + getComment() + "'" +
+            ", createdAt='" + getCreatedAt() + "'" +
+            ", updatedAt='" + getUpdatedAt() + "'" +
             "}";
     }
+
     
 }

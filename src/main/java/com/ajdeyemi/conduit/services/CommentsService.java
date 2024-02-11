@@ -1,6 +1,9 @@
 package com.ajdeyemi.conduit.services;
 
+import java.time.Instant;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,16 +29,30 @@ public class CommentsService {
     @Autowired
     UsersRepository usersRepository;
 
-    public Comments addComment(String slug, String comment) throws Exception{
+    public Map<String, Object> addComment(String slug, String comment) throws Exception{
         // long article, long user, String comment
  String authenticated = SecurityContextHolder.getContext().getAuthentication().getName();
         Users currentUser= usersRepository.findUsersByEmail(authenticated);
         if(slug!=null){
         Articles article= articlesRepository.findBySlug(slug);
         if(article!=null){
-            Comments newComment= new Comments(article.getId(),currentUser.getId(),comment);
+              Instant createdAt = Instant.now();
+        Instant updatedAt = Instant.now();
+            Comments newComment= new Comments(article.getId(),currentUser.getId(),comment,createdAt,updatedAt);
             commentsRepository.save(newComment);
-            return newComment;
+            // ReturnedComment returnedComment=new ReturnedComment(newComment, currentUser);
+            Map<String, Object>author=new HashMap<String, Object>();
+            author.put("username", currentUser.getUsername());
+            author.put("email", currentUser.getEmail());
+
+            Map<String, Object> returnedObject =new HashMap<String, Object>();
+            returnedObject.put("id", newComment.getId());
+            returnedObject.put("createdAt", newComment.getCreatedAt());
+            returnedObject.put("updatedAt", newComment.getUpdatedAt());
+            returnedObject.put("body", newComment.getComment());
+            returnedObject.put("author", author);
+
+            return returnedObject;
         }else{
             throw new Exception("This article does not exist");
         }
