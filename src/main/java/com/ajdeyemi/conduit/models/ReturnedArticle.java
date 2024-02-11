@@ -7,6 +7,4 @@ public interface ReturnedArticle  {
     public Articles getArticle();
     public List<Tags> getTag();
     public Users getAuthor();
-
-
 }

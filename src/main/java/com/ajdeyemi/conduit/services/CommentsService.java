@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import com.ajdeyemi.conduit.models.Articles;
 import com.ajdeyemi.conduit.models.Comments;
+import com.ajdeyemi.conduit.models.ReturnedComment;
 import com.ajdeyemi.conduit.models.Users;
 import com.ajdeyemi.conduit.repositories.ArticlesRepository;
 import com.ajdeyemi.conduit.repositories.CommentsRepository;
@@ -52,7 +54,9 @@ public class CommentsService {
             returnedObject.put("body", newComment.getComment());
             returnedObject.put("author", author);
 
-            return returnedObject;
+            Map<String, Object>returnedValue= new HashMap<String,Object>();
+            returnedValue.put("comment", returnedValue);
+            return returnedValue;
         }else{
             throw new Exception("This article does not exist");
         }
@@ -61,12 +65,47 @@ public class CommentsService {
         }
     }
 
-    public List<Comments> getArticleComments(String slug)throws Exception{
+        private List<Map<String, Object>> commentObjectList(List<Comments> comments, List<Users> author) {
+        return comments.stream().map(comment -> {
+            var authorId = comment.getAuthor();
+            Users user = author.stream()
+                    .filter(u -> u.getId() == (authorId))
+                    .findFirst().get();
+
+            String username = user.getUsername();
+            String email = user.getEmail();
+            long id = user.getId();
+
+            Map<String, Object> authorMap = new HashMap<>();
+            authorMap.put("username", username);
+            authorMap.put("email", email);
+            authorMap.put("id", id);
+
+            Map<String, Object> commentMap = new HashMap<>();
+            commentMap.put("id", comment.getId());
+            commentMap.put("createdAt", comment.getCreatedAt());
+            commentMap.put("updatedAt", comment.getUpdatedAt());
+            commentMap.put("body", comment.getComment());
+            commentMap.put("author", authorMap);
+
+
+            return commentMap;
+        }).collect(Collectors.toList());
+    }
+
+    public Map<String, Object> getArticleComments(String slug)throws Exception{
         if(slug!=null){
             Articles getArticle= articlesRepository.findBySlug(slug);
             if(getArticle!=null){
-                List <Comments> comments= commentsRepository.findByArticle(getArticle.getId());
-                return comments;
+                List <ReturnedComment> response= commentsRepository.findComments(getArticle.getId());
+                List<Users> author = response.stream().map(item -> item.getAuthor()).collect(Collectors.toList());
+               List<Comments> comments=response.stream().map(item->item.getComment()).collect(Collectors.toList());
+               
+               List<Map<String, Object>> result = commentObjectList(comments, author);
+            Map<String, Object> resultMap = new HashMap<>();
+            resultMap.put("comments", result);
+            return resultMap;
+
             }else{
                 throw new Exception("This article does not exist"); 
             }

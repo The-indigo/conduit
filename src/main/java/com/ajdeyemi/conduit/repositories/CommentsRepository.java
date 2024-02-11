@@ -10,8 +10,8 @@ import com.ajdeyemi.conduit.models.ReturnedComment;
 
 public interface CommentsRepository extends JpaRepository<Comments, Long> {
     List<Comments> findByArticle(long id);
-    @Query("SELECT c as comment,u as user FROM Comments c inner join Users u on u.id= c.author")
-    List<ReturnedComment> getComments();
+    @Query("SELECT c as comment,u as author FROM Comments c inner join Users u on u.id= c.author where c.article=?1")
+    List<ReturnedComment> findComments(long articleId);
 
 
 }
