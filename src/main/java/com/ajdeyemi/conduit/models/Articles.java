@@ -33,6 +33,11 @@ public class Articles {
 
     public Articles() {
     }
+    public Articles(String title, String description, String body) {
+        this.title = title;
+        this.description = description;
+        this.body = body;
+    }
 
     public Articles(String slug, long author, String title, String description, String body, int favoriteCount, Instant createdAt, Instant updatedAt) {
         this.slug = slug;
