@@ -20,6 +20,7 @@ import com.ajdeyemi.conduit.models.ReturnedArticle;
 import com.ajdeyemi.conduit.models.Tags;
 import com.ajdeyemi.conduit.models.Users;
 import com.ajdeyemi.conduit.repositories.ArticlesRepository;
+import com.ajdeyemi.conduit.repositories.FavoritesRepository;
 import com.ajdeyemi.conduit.repositories.FollowersRepository;
 import com.ajdeyemi.conduit.repositories.TagsRepository;
 import com.ajdeyemi.conduit.repositories.UsersRepository;
@@ -39,6 +40,8 @@ public class ArticlesService {
 
     @Autowired
     UsersRepository usersRepository;
+    @Autowired
+    FavoritesRepository favoritesRepository;
 
     Faker faker = new Faker();
 
@@ -80,6 +83,7 @@ public class ArticlesService {
 // This is an helper method to return the result of the query
 // This helps to avoid writing duplicate code for each conditionals in the getArticles method
     private Map<String, Object> resultMap(Page<ReturnedArticle> response) {
+
         List<Articles> articles = response.stream().map(item -> item.getArticle()).collect(Collectors.toList());
 
         List<Tags> tags = response.stream()
@@ -121,10 +125,13 @@ public class ArticlesService {
 
     // Get one article item
     public HashMap<String, Object> getArticle(String slug) throws Exception {
+        String authenticated = SecurityContextHolder.getContext().getAuthentication().getName();
+        Users currentUser = usersRepository.findUsersByEmail(authenticated);
         if (slug != null && !(slug.isBlank())) {
             List<ReturnedArticle> items = articlesRepository.getOneArticle(slug);
 
             if (!(items.isEmpty())) {
+           
                 // Joins the tags array into one array and selects the tag field from the array
                 // of objects
                 var tags = items.stream().flatMap(item -> item.getTag().stream())
@@ -132,6 +139,9 @@ public class ArticlesService {
                         .collect(Collectors.toList());
                 var author = items.get(0).getAuthor();
                 var article = items.get(0).getArticle();
+
+                var favorited=favoritesRepository.findFavorited(currentUser.getId(), article.getId());
+                boolean isFavorited= favorited!=null?true:false;
 
                 HashMap<String, Object> authorObject = new HashMap<>();
                 authorObject.put("username", author.getUsername());
@@ -143,6 +153,7 @@ public class ArticlesService {
                 articleObject.put("description", article.getDescription());
                 articleObject.put("body", article.getBody());
                 articleObject.put("tagsList", tags);
+                articleObject.put("favorited",isFavorited );
                 articleObject.put("createdAt", article.getCreatedAt());
                 articleObject.put("updatedAt", article.getUpdatedAt());
                 articleObject.put("favoritesCount", article.getFavoriteCount());
@@ -203,6 +214,7 @@ public class ArticlesService {
         articleObject.put("description", article.getDescription());
         articleObject.put("body", article.getBody());
         articleObject.put("tagsList", tags);
+        articleObject.put("favorited", false);
         articleObject.put("createdAt", article.getCreatedAt());
         articleObject.put("updatedAt", article.getUpdatedAt());
         articleObject.put("favoritesCount", article.getFavoriteCount());
@@ -259,8 +271,13 @@ public class ArticlesService {
     // This method constructs the article object from the data returned from the
     // Query
     private List<Map<String, Object>> articleObjectList(List<Articles> articles, List<Tags> tags, List<Users> author) {
+        String authenticated = SecurityContextHolder.getContext().getAuthentication().getName();
+            Users currentUser = usersRepository.findUsersByEmail(authenticated);
         return articles.stream().map(article -> {
+            boolean isFavorited;
             var authorId = article.getAuthor();
+            var favorite=favoritesRepository.findFavorited(currentUser.getId(), article.getId());
+            isFavorited=favorite!=null?true:false;
             Users user = author.stream()
                     .filter(u -> u.getId() == (authorId))
                     .findFirst().get();
@@ -283,6 +300,7 @@ public class ArticlesService {
             articleMap.put("title", article.getTitle());
             articleMap.put("description", article.getDescription());
             articleMap.put("body", article.getBody());
+            articleMap.put("favorited",isFavorited);
             articleMap.put("createdAt", article.getCreatedAt());
             articleMap.put("updatedAt", article.getUpdatedAt());
             articleMap.put("favoritesCount", article.getFavoriteCount());
@@ -291,6 +309,7 @@ public class ArticlesService {
 
             return articleMap;
         }).collect(Collectors.toList());
+    
     }
 
     public void generateAndSaveData(int numberOfEntries) {
