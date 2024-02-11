@@ -42,6 +42,7 @@ public class ArticlesService {
 
     Faker faker = new Faker();
 
+    // Get all articles
     public Map<String, Object> geArticles(int page, int size, Optional<String> byTag,
             Optional<String> byAuthor) throws Exception {
         PageRequest request = PageRequest.of(page, size);
@@ -93,6 +94,7 @@ public class ArticlesService {
         return resultMap;
     }
 
+    // Get all followers articles
     public Map<String, Object> getFeed() throws Exception {
         String authenticated = SecurityContextHolder.getContext().getAuthentication().getName();
         Users currentUser = usersRepository.findUsersByEmail(authenticated);
@@ -117,6 +119,7 @@ public class ArticlesService {
 
     }
 
+    // Get one article item
     public HashMap<String, Object> getArticle(String slug) throws Exception {
         if (slug != null && !(slug.isBlank())) {
             List<ReturnedArticle> items = articlesRepository.getOneArticle(slug);
@@ -156,6 +159,7 @@ public class ArticlesService {
         }
     }
 
+    // Create an article
     public HashMap<String, Object> createArticle(String title, String description, String body, List<String> tags)
             throws Exception {
         String authenticated = SecurityContextHolder.getContext().getAuthentication().getName();
@@ -209,6 +213,7 @@ public class ArticlesService {
         return result;
     }
 
+    // Update an article
     public Articles updateArticle(String slug, String title, String description, String body) throws Exception {
         String authenticated = SecurityContextHolder.getContext().getAuthentication().getName();
         Users currentUser = usersRepository.findUsersByEmail(authenticated);
@@ -232,6 +237,8 @@ public class ArticlesService {
         }
 
     }
+
+        // Delete an article
 
     public String deleteArticle(String slug) throws Exception {
         String authenticated = SecurityContextHolder.getContext().getAuthentication().getName();
