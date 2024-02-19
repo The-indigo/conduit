@@ -3,6 +3,7 @@ package com.ajdeyemi.conduit.services;
 import java.util.List;
 import java.util.Optional;
 
+import com.ajdeyemi.conduit.exception.BusinessRuleException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -37,7 +38,8 @@ public class UsersService {
     @Autowired
     TokenService tokenService;
 
-    public Users register(String email, String password, String username, List<Roles> role) throws Exception {
+    public Users register(String email, String password, String username, List<Roles> role) throws Exception, BusinessRuleException {
+        //todo: use validation annotations to validate the user object, on DTO and entity class
         if (password == null) {
             throw new Exception("Password is required");
         }
@@ -47,6 +49,11 @@ public class UsersService {
         }
         if (username == null) {
             throw new Exception("Username is required");
+
+        }
+        //todo: sample custom exception
+        if (username == null) {
+            throw new BusinessRuleException("Username is required");
 
         }
         if (role == null) {
@@ -64,6 +71,9 @@ public class UsersService {
             throw new Exception("Too late!! Someone already took this username");
         }
         String encryptedPassword = passwordEncoder.encode(password);
+
+        //user.setPassword(encryptedPassword);
+
         Users newUser = new Users(email, username, encryptedPassword, role);
         usersRepository.save(newUser);
         return newUser;
@@ -153,6 +163,30 @@ public class UsersService {
         } else {
             throw new Exception("No username provided");
         }
+
+        //todo: refactor code above and try to use just one identation level. do the verification you need and if it
+        //doesnt pass, throw the exception or return
+
+//        if (username == null || username.isBlank()) {
+//            throw new Exception("Username is required");
+//        }
+//        Users user = usersRepository.findUsersByUsername(username);
+//        if (user == null) {
+//            throw new Exception("Sorry, this user can't be found");
+//        }
+//        Users currentUser = usersRepository.findUsersByEmail(authenticated);
+//
+//        Followers following = followersRepository.findFollowingUsername(currentUser.getId(), user.getId());
+//        if (following != null) {
+//            Profile isFollowing = new Profile(user.getEmail(), user.getUsername(), true);
+//            return isFollowing;
+//        } else {
+//            Profile isNotFollowing = new Profile(user.getEmail(), user.getUsername(), false);
+//            return isNotFollowing;
+//        }
+
+
+
     }
 
 
