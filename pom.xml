@@ -46,6 +46,16 @@
     <artifactId>postgresql</artifactId>
     <version>42.7.1</version>
 </dependency>
+		<dependency>
+			<groupId>org.junit.jupiter</groupId>
+			<artifactId>junit-jupiter</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+  <groupId>org.mockito</groupId>
+  <artifactId>mockito-core</artifactId>
+  <scope>test</scope>
+</dependency>
 <dependency>
     <groupId>net.datafaker</groupId>
     <artifactId>datafaker</artifactId>
@@ -57,6 +67,15 @@
     <artifactId>jackson-core</artifactId>
     <version>2.16.1</version>
 </dependency>
+
+<!-- https://mvnrepository.com/artifact/org.springframework.security/spring-security-test -->
+<dependency>
+    <groupId>org.springframework.security</groupId>
+    <artifactId>spring-security-test</artifactId>
+    <version>6.2.1</version>
+    <scope>test</scope>
+</dependency>
+
 
 
 		<dependency>

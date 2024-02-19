@@ -1,6 +1,7 @@
 package com.ajdeyemi.conduit.models;
 import java.util.Objects;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -15,6 +16,7 @@ public class Favorites {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
     private long article;
+    @Column(name = "userid")
     private long user;
     
 
