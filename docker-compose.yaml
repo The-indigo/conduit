@@ -1,0 +1,30 @@
+version: '3.9'
+services:
+  db:
+    image: 'postgres:13.1-alpine'
+    container_name: conduitdb
+    expose:
+      - 5432
+    environment:
+    # If the postgres-db var isn't provided, postgres defaults to using
+    # the value of POSTGRES_USER as the database name
+      - POSTGRES_DB=conduit
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+    volumes:
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+
+  app:
+    build:
+      context: ./
+    image: theyemi/conduit
+    container_name: conduit
+    ports:
+      - 8080:8080
+    depends_on:
+      - db
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://conduitdb:5432/conduit
+      SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER}
+      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD}
+
