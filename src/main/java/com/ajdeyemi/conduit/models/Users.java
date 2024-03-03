@@ -1,5 +1,6 @@
 package com.ajdeyemi.conduit.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -14,12 +15,13 @@ import java.util.Objects;
 @Entity
 @Table(name = "users")
 public class Users {
-
+//todo: Use lombok to generate the getters and setters, @Data will do that for you
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
     private String email;
     private String username;
+    //todo: include @JsonIgnore should be in the DTO
     private String password;
     // this is an enum. The value is by default stored as a number 
     // in the database if it is stored as a list
@@ -29,7 +31,7 @@ public class Users {
     public Users() {
     }
 
-
+    //todo: you dont need that much constructor. you can have a userDto without the id and password
     public Users(String email, String username, String password, List<Roles> role) {
         this.email = email;
         this.username = username;
